@@ -1,0 +1,4 @@
+name: GPSend
+version: '1.0.0'
+main: driven.by.data.gPSend.GPSend
+api-version: '1.21'
