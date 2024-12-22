@@ -1,5 +1,5 @@
 name: GPSend
-version: '1.4.3'
+version: '2.0.0B'
 main: driven.by.data.gpsend.GPSend
 api-version: '1.13'
 commands:

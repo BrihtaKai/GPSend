@@ -27,12 +27,33 @@
 
 package driven.by.data.gpsend;
 
+import driven.by.data.gpsend.commands.GpsendCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Objects;
+
 
 public final class GPSend extends JavaPlugin {
 
+
+    private static GPSend gpsend;
+    public GPSend() {
+        gpsend = this;
+    }
+    public static GPSend get() { return gpsend; }
+
+
+
+
     @Override
     public void onEnable() {
+
+        //config
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+
+        //register commands
+        Objects.requireNonNull(getCommand("gpsend")).setExecutor(new GpsendCommand());
 
     }
 
@@ -40,4 +61,6 @@ public final class GPSend extends JavaPlugin {
     public void onDisable() {
 
     }
+
+
 }

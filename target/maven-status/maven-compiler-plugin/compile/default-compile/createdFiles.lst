@@ -1,3 +1,3 @@
+driven\by\data\gpsend\utils\ColorFormat.class
 driven\by\data\gpsend\GPSend.class
-driven\by\data\gpsend\commands\GPall.class
-driven\by\data\gpsend\commands\GPcommand.class
+driven\by\data\gpsend\commands\GpsendCommand.class
