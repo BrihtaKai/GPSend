@@ -2,6 +2,7 @@ package driven.by.data.gpsend.commands;
 
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.ColorFormat;
+import driven.by.data.gpsend.utils.PlayerStatusManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,6 +41,8 @@ public class GpsendCommand implements CommandExecutor {
             String type = args[0];
             switch (type.toLowerCase()) {
                 case "player": {
+                    PlayerStatusManager.setPlayerStatus(player.getUniqueId(), "type", "player");
+
                     String playerName = args[1];
                     int amount = Integer.parseInt(args[2]);
                     // TYPE IS PLAYER CHECK ARGS LENGTH
@@ -56,6 +59,8 @@ public class GpsendCommand implements CommandExecutor {
                     break;
                 }
                 case "all": {
+                    PlayerStatusManager.setPlayerStatus(player.getUniqueId(), "type", "player");
+
                     int amount = Integer.parseInt(args[1]);
                     if (argLength == 1) {
                         // NUMBER OF CLAIMBLOCKS IS MISSING :: OPEN AMOUNT-GUI
