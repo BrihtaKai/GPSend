@@ -1,38 +1,87 @@
-
-
-
+# ################################################################ #
+#   $$$$$$\                                                $$\     #
+#  $$  __$$\                                               $$ |    #
+#  $$ /  \__| $$$$$$\   $$$$$$$\  $$$$$$\  $$$$$$$\   $$$$$$$ |    #
+#  $$ |$$$$\ $$  __$$\ $$  _____|$$  __$$\ $$  __$$\ $$  __$$ |    #
+#  $$ |\_$$ |$$ /  $$ |\$$$$$$\  $$$$$$$$ |$$ |  $$ |$$ /  $$ |    #
+#  $$ |  $$ |$$ |  $$ | \____$$\ $$   ____|$$ |  $$ |$$ |  $$ |    #
+#  \$$$$$$  |$$$$$$$  |$$$$$$$  |\$$$$$$$\ $$ |  $$ |\$$$$$$$ |    #
+#   \______/ $$  ____/ \_______/  \_______|\__|  \__| \_______|    #
+#            $$ |                                                  #
+#            $$ |                                                  #
+#            \__|                                                  #
+# ################################################################ #
+# Author: brihtakai (DrivenByData) # Support(discord): brihtec     #
+# Plugin Version: 2.0.0            # Requirements: GriefPrevention #
+# ################################################################ #
+# ERROR SECTION:
+# invalid_amount: Happens when player tries to use negative number
+# no_enough_blocks: Happens when player tries to send more blocks than he has
+# player_not_found: Happens when player tries to send blocks to non-existing player
+# invalid_type: Happens when player tries to choose invalid type (/gpsend <type>)
+# no_permission: Happens when player tries to use command without permission
+# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+invalid_amount: "&cInvalid amount. Please enter a valid number"
+no_enough_blocks: "&cYou don't have enough %type% claim blocks to send! You need %need% more."
+player_not_found: "&cTarget player not found or not online."
 invalid_type: "&cYou must choose between: PLAYER|ALL"
+no_permission: "&cYou don't have permission to use this command."
+# ################################################################ #
+# MESSAGE SECTION:
+# sender: This message is seen by sender when claimblocks were sent
+# receiver: This message is seen by receiver when claimblocks were sent
+# broadcast_message: This message is seen by everyone when /gpsendall is used
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+sender: "&aYou have just sent %amount% %type% claim blocks to %target%."
+receiver: "&a%player% just sent you %amount% %type% claim blocks."
+broadcast_message: "&6%player% sent %amount% %type% claim blocks to everyone online, which is %total% in total."
+# ################################################################ #
+# FUNCTIONALITY SETTINGS:
+# broadcast_on_sendall: If true, sends a broadcast message when /gpsendall is used
+# sendall_log: If true, when player uses /gpsendall for every player, it logs(to sender)
+# claimblocks_type: 0 = total, 1 = bonus, 2 = accrued ; Type of claimblocks plugin will be working with
+# check_for_updates: If true, checks for updates
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+broadcast_on_sendall: true
+sendall_log: false
+claimblocks_type: 0 # ( 0 = total, 1 = bonus, 2 = accrued ) + types explained in the bottom of the config
+check_for_updates: true # Every 24h
+# ################################################################ #
+# GUI SETTINGS:
+# gui1_title: Title of the type choose gui (all/player)
+# gui1_player_name: Name of the player button
+# gui1_player_lore: Lore of the player button
+# gui1_all_name: Name of the all button
+# gui1_all_lore: Lore of the all button
+# gui2_title: Title of the player list gui
+# gui2_prev_page: Name of the previous page button (in player select gui)
+# gui2_next_page: Name of the next page button (in player select gui)
+# gui3_title: Title of the amount selector gui
+# gui3_confirm_name: Name of the confirm button (in amount selector gui)
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+gui1_title: "&6&lGPSend - Choose Type"
+gui1_player_name: "&6Player"
+gui1_player_lore:
+  - "&7Send claim blocks to"
+  - "&7specific player"
+gui1_all_name: "&6All"
+gui1_all_lore:
+  - "&7Send claim blocks to"
+  - "&7everyone online"
 
-
-
-
-################################################
-# ━━━┳━━━╮
-# ┃╭━╮┃╭━╮┃
-# ┃┃╱╰┫╰━╯┣━━╮   Version: 2.0.0B
-# ┃┃╭━┫╭━━┫━━┫   Author: brihtakai
-# ┃╰┻━┃┃╱╱┣━━┃
-# ╰━━━┻╯╱╱╰━━╯
-################################################
-
-## ERRORS
-#no_player: "&cYou need to choose player."
-#no_number: "&cYou need to specify how much claim blocks do you want to send."
-#no_blocks: "&cYou dont have enought claim blocks!"
-#only_int: "&cValue of blocks must be a number!"
-#yourself: "&cYou can't send claim blocks to yourself!"
-#player_not_found: "&cSorry! We couldn't find that player!"
-#usage: "&4Usage: /gpsend <player_name> <number> || /gpsend reload"
-#usage2: "&4Usage: /gpsend-all <amount>"
-#
-## MESSAGES
-#reload: "&aPlugin successfully reloaded!"
-#no_perm: "&cYou have no permission to do this!"
-#only_players: "&cConsole can not execute this command."
-#sender: "&aYou send {number} claimblocks to {target}."
-#receiver: "&a{player} just sent you {number} claim blocks."
-#toall: "&a&l{player} just sent {number} claim blocks to everyone online."
-#
-#
-## Every 24h
-#check-for-updates: true
+gui2_title: "&6&lGPSend - Player List"
+gui2_prev_page: "&bPrevious Page"
+gui2_next_page: "&bNext Page"
+gui3_title: "&6&lGPSend - Amount Selector"
+gui3_confirm_name: "&aConfirm"
+# ################################################################ #
+# ACCRUED claim blocks - These are claim blocks that a player earns over time, typically for free, as they play on the server.
+#  *Players accumulate accrued claim blocks at a rate set by the server admin (e.g., 100 blocks/hour of playtime).
+#  *These blocks are not bought or given as a bonus—they are earned naturally through gameplay.
+#  *They have a cap (maximum accrued claim blocks) to prevent players from accumulating infinite blocks.
+# BONUS claim blocks - These are additional claim blocks that an admin can give to a player manually or through commands.
+#  *Bonus blocks are often given as rewards, purchased through in-game economies, or granted for promotions or events.
+#  *They are added on top of accrued claim blocks and do not expire unless explicitly removed.
+# TOTAL claim blocks - The sum of a player’s accrued claim blocks and bonus claim blocks.
+#  *This is the total number of claim blocks a player can use to claim or expand land.
+#  * Total claim blocks = Accrued claim blocks + Bonus claim blocks

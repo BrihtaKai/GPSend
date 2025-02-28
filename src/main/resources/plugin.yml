@@ -4,8 +4,8 @@ main: driven.by.data.gpsend.GPSend
 api-version: '1.13'
 commands:
   gpsend:
-    description: Send claim blocks to player.
-  gpsend-all:
-    description: Send claim blocks to all online players.
+    description: Send claim blocks.
+  gpsend-admin:
+    description: Gpsend admin command.
 
 depend: [GriefPrevention]
