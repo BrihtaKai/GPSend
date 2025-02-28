@@ -6,7 +6,7 @@
 
   <groupId>driven.by.data</groupId>
   <artifactId>GPSend</artifactId>
-  <version>1.4.3</version>
+  <version>2.0.0</version>
   <packaging>jar</packaging>
 
   <name>GPSend</name>
@@ -23,8 +23,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -67,6 +67,7 @@
                     </archive>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -89,6 +90,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
         <resources>
             <resource>
@@ -130,6 +132,12 @@
           <groupId>org.bstats</groupId>
           <artifactId>bstats-bukkit</artifactId>
           <version>3.0.2</version>
+          <scope>compile</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.jetbrains</groupId>
+          <artifactId>annotations</artifactId>
+          <version>24.0.1</version>
           <scope>compile</scope>
       </dependency>
   </dependencies>

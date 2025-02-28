@@ -27,8 +27,11 @@
 
 package driven.by.data.gpsend;
 
-import driven.by.data.gpsend.commands.GPall;
-import driven.by.data.gpsend.commands.GPcommand;
+import driven.by.data.gpsend.command.GpsendAdmin;
+import driven.by.data.gpsend.command.GpsendCommand;
+import driven.by.data.gpsend.command.TabCompleter;
+import driven.by.data.gpsend.gui.GUIManager;
+import driven.by.data.gpsend.listener.GUIInteract;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,36 +41,55 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
+
 
 public final class GPSend extends JavaPlugin {
 
+    private static GPSend instance;
+    private GUIManager guiManager;
     private static final String SPIGOT_RESOURCE_ID = "115468";
-    private static final String AUTHOR = "BrihtaKai (DrivenbyData.studios";
-    private static final String[] STARTUP_MESSAGE = {
-            "&a╭━━━┳━━━╮",
-            "&a┃╭━╮┃╭━╮┃",
-            "&a┃┃╱╰┫╰━╯┣━━╮   &2Version: 1.3.1",
-            "&a┃┃╭━┫╭━━┫━━┫   &2Author: " + AUTHOR,
-            "&a┃╰┻━┃┃╱╱┣━━┃",
-            "&a╰━━━┻╯╱╱╰━━╯"
-    };
+
+    public GPSend() {
+        this.instance = this;
+    }
+
+    public static GPSend getInstance() {
+        return instance;
+    }
+    public GUIManager getGuiManager() {
+        return guiManager;
+    }
+
 
     @Override
     public void onEnable() {
 
+        this.guiManager = new GUIManager(instance);
+        Bukkit.getPluginManager().registerEvents(new GUIInteract(), this);
+
+        mkConfig();
         initMetrics();
-        loadConfig();
-        registerCommands();
-        sendStartupMessage();
-        if (getConfig().getBoolean("check-for-updates")) {
+
+        if (getConfig().getBoolean("check_for_updates")) {
             startUpdateCheckTask();
             checkForUpdates();
         }
+
+        //register commands
+        Objects.requireNonNull(getCommand("gpsend")).setExecutor(new GpsendCommand());
+        Objects.requireNonNull(getCommand("gpsend")).setTabCompleter(new TabCompleter());
+        Objects.requireNonNull(getCommand("gpsend-admin")).setExecutor(new GpsendAdmin());
+        Objects.requireNonNull(getCommand("gpsend-admin")).setTabCompleter(new GpsendAdmin());
+
+        Bukkit.getLogger().info("GPSend has been enabled!");
+
+
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic (if needed)
+
     }
 
     private void initMetrics() {
@@ -75,20 +97,12 @@ public final class GPSend extends JavaPlugin {
         new Metrics(this, pluginId);
     }
 
-    private void loadConfig() {
+    public void mkConfig() {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
+        }
         getConfig().options().copyDefaults();
         saveDefaultConfig();
-    }
-
-    private void registerCommands() {
-        getCommand("gpsend").setExecutor(new GPcommand(this));
-        getCommand("gpsend-all").setExecutor(new GPall(this));
-    }
-
-    private void sendStartupMessage() {
-        for (String line : STARTUP_MESSAGE) {
-            getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', line));
-        }
     }
 
 
@@ -148,4 +162,6 @@ public final class GPSend extends JavaPlugin {
             Bukkit.getLogger().warning(message);
         });
     }
+
+
 }

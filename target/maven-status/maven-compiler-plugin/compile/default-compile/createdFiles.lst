@@ -1,3 +1,11 @@
+driven\by\data\gpsend\gui\GUIManager.class
+driven\by\data\gpsend\gui\AmountGUI.class
+driven\by\data\gpsend\command\TabCompleter.class
+driven\by\data\gpsend\command\GpsendAdmin.class
+driven\by\data\gpsend\gui\PlayerListGUI.class
+driven\by\data\gpsend\utils\PlayerStatusManager.class
+driven\by\data\gpsend\command\GpsendCommand.class
+driven\by\data\gpsend\utils\ColorFormat.class
+driven\by\data\gpsend\listener\GUIInteract.class
+driven\by\data\gpsend\gui\ChoosingGUI.class
 driven\by\data\gpsend\GPSend.class
-driven\by\data\gpsend\commands\GPall.class
-driven\by\data\gpsend\commands\GPcommand.class

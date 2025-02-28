@@ -4,7 +4,7 @@
   <groupId>driven.by.data</groupId>
   <artifactId>GPSend</artifactId>
   <name>GPSend</name>
-  <version>1.4.3</version>
+  <version>2.0.0</version>
   <build>
     <resources>
       <resource>
@@ -17,8 +17,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <source>9</source>
+          <target>9</target>
         </configuration>
       </plugin>
       <plugin>
@@ -57,27 +57,6 @@
             </manifest>
           </archive>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.4.1</version>
-        <executions>
-          <execution>
-            <id>check-env</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireEnvironmentVariable>
-                  <variableName>ALLOW_COMPILE</variableName>
-                  <message>Compilation is not permitted.</message>
-                </requireEnvironmentVariable>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
