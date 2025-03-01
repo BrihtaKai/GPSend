@@ -93,7 +93,7 @@ public final class GPSend extends JavaPlugin {
     }
 
     private void initMetrics() {
-        int pluginId = 22118; // <-- Metrics plugin ID
+        int pluginId = 00000; // <-- Metrics plugin ID
         new Metrics(this, pluginId);
     }
 
