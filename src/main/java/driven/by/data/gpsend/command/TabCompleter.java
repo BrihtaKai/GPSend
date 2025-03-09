@@ -22,16 +22,14 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
             res.add("player");
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("all")) { // Second argument for "all": amount
-                res.add("<non-negative-amount>");
-                res.add("example: 5");
+                res.add("<int>");
             } else if (args[0].equalsIgnoreCase("player")) { // Second argument for "player": player name
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     res.add(player.getName());
                 }
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("player")) { // Third argument for "player": amount
-            res.add("<non-negative-amount>");
-            res.add("example: 5");
+            res.add("<int>");
         }
 
         return res;

@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GpsendCommand implements CommandExecutor {
 
@@ -52,6 +53,11 @@ public class GpsendCommand implements CommandExecutor {
                         try {
                             String playerName = args[1];
                             int amount = Integer.parseInt(args[2]);
+                            if (amount <= 0) {
+                                // Negative amount is not allowed
+                                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                                return true;
+                            }
                             handleSending(player, playerName, amount, true);
                         } catch (NumberFormatException e) {
                             player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
@@ -73,6 +79,11 @@ public class GpsendCommand implements CommandExecutor {
                     if (argLength >= 2) {
                         try {
                             int amount = Integer.parseInt(args[1]);
+                            if (amount <= 0) {
+                                // Negative amount is not allowed
+                                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                                return true;
+                            }
                             handleAllSending(player, amount);
                         } catch (NumberFormatException e) {
                             player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
@@ -163,6 +174,13 @@ public class GpsendCommand implements CommandExecutor {
         // Check if the target player is online
         if (targetPlayer == null) {
             sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("player_not_found")));
+            return;
+        }
+
+        if (sender.getName().equalsIgnoreCase(targetName)) {
+            if (all) {
+                sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("cannot_send_to_self")));
+            }
             return;
         }
 

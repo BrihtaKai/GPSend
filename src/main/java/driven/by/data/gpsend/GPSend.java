@@ -27,6 +27,7 @@
 
 package driven.by.data.gpsend;
 
+import driven.by.data.gpsend.command.AliasManager;
 import driven.by.data.gpsend.command.GpsendAdmin;
 import driven.by.data.gpsend.command.GpsendCommand;
 import driven.by.data.gpsend.command.TabCompleter;
@@ -48,6 +49,7 @@ public final class GPSend extends JavaPlugin {
 
     private static GPSend instance;
     private GUIManager guiManager;
+    private AliasManager aliasManager;
     private static final String SPIGOT_RESOURCE_ID = "115468";
 
     public GPSend() {
@@ -60,12 +62,16 @@ public final class GPSend extends JavaPlugin {
     public GUIManager getGuiManager() {
         return guiManager;
     }
+    public AliasManager getAliasManager() {
+        return aliasManager;
+    }
 
 
     @Override
     public void onEnable() {
 
         this.guiManager = new GUIManager(instance);
+        this.aliasManager = new AliasManager();
         Bukkit.getPluginManager().registerEvents(new GUIInteract(), this);
 
         mkConfig();
@@ -81,6 +87,7 @@ public final class GPSend extends JavaPlugin {
         Objects.requireNonNull(getCommand("gpsend")).setTabCompleter(new TabCompleter());
         Objects.requireNonNull(getCommand("gpsend-admin")).setExecutor(new GpsendAdmin());
         Objects.requireNonNull(getCommand("gpsend-admin")).setTabCompleter(new GpsendAdmin());
+        aliasManager.gpsendAliasRegister();
 
         Bukkit.getLogger().info("GPSend has been enabled!");
 

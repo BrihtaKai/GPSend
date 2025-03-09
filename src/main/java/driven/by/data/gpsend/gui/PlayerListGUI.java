@@ -41,6 +41,7 @@ public class PlayerListGUI {
         inv.setItem(49, pageint);
 
         List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
+        onlinePlayers.remove(executor);
         int startIndex = page * 36;
         int endIndex = Math.min(startIndex + 36, onlinePlayers.size());
 

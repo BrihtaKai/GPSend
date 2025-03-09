@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GpsendAdmin extends TabCompleter implements CommandExecutor {
+
+    private final GPSend instance = GPSend.getInstance();
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
 
@@ -31,6 +33,7 @@ public class GpsendAdmin extends TabCompleter implements CommandExecutor {
 
         if (strings[0].equalsIgnoreCase("reload")) {
             GPSend.getInstance().reloadConfig();
+            instance.getAliasManager().gpsendAliasRegister();
             sender.sendMessage(ColorFormat.stringColorise("&#", "Config reloaded!"));
         }
 

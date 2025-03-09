@@ -26,6 +26,7 @@ no_enough_blocks: "&cYou don't have enough %type% claim blocks to send! You need
 player_not_found: "&cTarget player not found or not online."
 invalid_type: "&cYou must choose between: PLAYER|ALL"
 no_permission: "&cYou don't have permission to use this command."
+cannot_send_to_self: "&cYou cannot send claimblocks to yourself."
 # ################################################################ #
 # MESSAGE SECTION:
 # sender: This message is seen by sender when claimblocks were sent
@@ -46,6 +47,8 @@ broadcast_on_sendall: true
 sendall_log: false
 claimblocks_type: 0 # ( 0 = total, 1 = bonus, 2 = accrued ) + types explained in the bottom of the config
 check_for_updates: true # Every 24h
+command_alias:
+  - "sendclaimblocks"
 # ################################################################ #
 # GUI SETTINGS:
 # gui1_title: Title of the type choose gui (all/player)
