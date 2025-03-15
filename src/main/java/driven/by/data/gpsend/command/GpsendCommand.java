@@ -2,6 +2,7 @@ package driven.by.data.gpsend.command;
 
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.ColorFormat;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ import java.util.Objects;
 public class GpsendCommand implements CommandExecutor {
 
     private final GPSend plugin = GPSend.getInstance();
+    private final boolean placeholderAPIInstalled = plugin.placeholderAPIInstalled;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -28,7 +30,11 @@ public class GpsendCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (!player.hasPermission("gpsend.send") && !player.isOp()) {
-            player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_permission")));
+            if (placeholderAPIInstalled) {
+                player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("no_permission"))));
+            } else {
+                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_permission")));
+            }
             return false;
         }
 
@@ -55,12 +61,20 @@ public class GpsendCommand implements CommandExecutor {
                             int amount = Integer.parseInt(args[2]);
                             if (amount <= 0) {
                                 // Negative amount is not allowed
-                                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                                if (placeholderAPIInstalled) {
+                                    player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("invalid_amount"))));
+                                } else {
+                                    player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                                }
                                 return true;
                             }
                             handleSending(player, playerName, amount, true);
                         } catch (NumberFormatException e) {
-                            player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                            if (placeholderAPIInstalled) {
+                                player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("invalid_amount"))));
+                            } else {
+                                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                            }
                         }
                         return true;
                     }
@@ -68,12 +82,16 @@ public class GpsendCommand implements CommandExecutor {
                 }
                 case "all": {
                     if (!player.hasPermission("gpsend.sendall") && !player.isOp()) {
-                        player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_permission")));
+                        if (placeholderAPIInstalled) {
+                            player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("no_permission"))));
+                        } else {
+                            player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_permission")));
+                        }
                         return false;
                     }
 
                     if (argLength == 1) {
-                        plugin.getGuiManager().getAmountGUI().open(player, "ALL");
+                        plugin.getGuiManager().getAmountGUI().open(player, plugin.getConfig().getString("gui3_info_mode_all"));
                         return true;
                     }
                     if (argLength >= 2) {
@@ -81,19 +99,31 @@ public class GpsendCommand implements CommandExecutor {
                             int amount = Integer.parseInt(args[1]);
                             if (amount <= 0) {
                                 // Negative amount is not allowed
-                                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                                if (placeholderAPIInstalled) {
+                                    player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("invalid_amount"))));
+                                } else {
+                                    player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                                }
                                 return true;
                             }
                             handleAllSending(player, amount);
                         } catch (NumberFormatException e) {
-                            player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                            if (placeholderAPIInstalled) {
+                                player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("invalid_amount"))));
+                            } else {
+                                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_amount")));
+                            }
                         }
                         return true;
                     }
                     break;
                 }
                 default: {
-                    player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_type")));
+                    if (placeholderAPIInstalled) {
+                        player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("invalid_type"))));
+                    } else {
+                        player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("invalid_type")));
+                    }
                     break;
                 }
             }
@@ -119,10 +149,15 @@ public class GpsendCommand implements CommandExecutor {
             case 0: {
                 type = "total";
                 if (senderTotal < totalAmount) {
-                    player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_enough_blocks")
+                    String message = plugin.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - senderTotal))
-                    ));
+                            .replace("%need%", String.valueOf(totalAmount - senderTotal));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(player, message);
+                    }
+
+                    player.sendMessage(ColorFormat.stringColorise("&#", message));
                     return;
                 }
                 break;
@@ -130,10 +165,15 @@ public class GpsendCommand implements CommandExecutor {
             case 1: {
                 type = "bonus";
                 if (senderBonus < totalAmount) {
-                    player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_enough_blocks")
+                    String message = plugin.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - senderBonus))
-                    ));
+                            .replace("%need%", String.valueOf(totalAmount - senderBonus));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(player, message);
+                    }
+
+                    player.sendMessage(ColorFormat.stringColorise("&#", message));
                     return;
                 }
                 break;
@@ -141,10 +181,15 @@ public class GpsendCommand implements CommandExecutor {
             case 2: {
                 type = "accrued";
                 if (senderAccrued < totalAmount) {
-                    player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_enough_blocks")
+                    String message = plugin.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - senderAccrued))
-                    ));
+                            .replace("%need%", String.valueOf(totalAmount - senderAccrued));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(player, message);
+                    }
+
+                    player.sendMessage(ColorFormat.stringColorise("&#", message));
                     return;
                 }
                 break;
@@ -158,14 +203,18 @@ public class GpsendCommand implements CommandExecutor {
         }
 
         if (plugin.getConfig().getBoolean("broadcast_on_sendall")){
-            Bukkit.broadcastMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("broadcast_message"))
+            String message = plugin.getConfig().getString("broadcast_message")
                     .replace("%player%", player.getName())
                     .replace("%type%", type)
                     .replace("%amount%", String.valueOf(amount))
-                    .replace("%total%", String.valueOf(totalAmount))
-            );
-        }
+                    .replace("%total%", String.valueOf(totalAmount));
 
+            if (placeholderAPIInstalled) {
+                message = PlaceholderAPI.setPlaceholders(player, message);
+            }
+
+            Bukkit.broadcastMessage(ColorFormat.stringColorise("&#", message));
+        }
     }
 
     public void handleSending(Player sender, String targetName, int amount, boolean all) {
@@ -173,13 +222,25 @@ public class GpsendCommand implements CommandExecutor {
 
         // Check if the target player is online
         if (targetPlayer == null) {
-            sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("player_not_found")));
+            String message = plugin.getConfig().getString("player_not_found");
+
+            if (placeholderAPIInstalled) {
+                message = PlaceholderAPI.setPlaceholders(sender, message);
+            }
+
+            sender.sendMessage(ColorFormat.stringColorise("&#", message));
             return;
         }
 
         if (sender.getName().equalsIgnoreCase(targetName)) {
             if (all) {
-                sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("cannot_send_to_self")));
+                String message = plugin.getConfig().getString("cannot_send_to_self");
+
+                if (placeholderAPIInstalled) {
+                    message = PlaceholderAPI.setPlaceholders(sender, message);
+                }
+
+                sender.sendMessage(ColorFormat.stringColorise("&#", message));
             }
             return;
         }
@@ -204,10 +265,15 @@ public class GpsendCommand implements CommandExecutor {
                 // TOTAL CLAIM BLOCKS
                 type = "total";
                 if (senderTotal < amount) {
-                    sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_enough_blocks")
+                    String message = plugin.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - senderTotal))
-                    ));
+                            .replace("%need%", String.valueOf(amount - senderTotal));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(sender, message);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", message));
                     return;
                 }
 
@@ -233,26 +299,43 @@ public class GpsendCommand implements CommandExecutor {
                 }
 
                 if (all) {
-                    sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("sender"))
+                    String senderMessage = plugin.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type));
+                            .replace("%type%", type);
+
+                    if (placeholderAPIInstalled) {
+                        senderMessage = PlaceholderAPI.setPlaceholders(sender, senderMessage);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", senderMessage));
                 }
-                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("receiver"))
+
+                String targetMessage = plugin.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type)
-                );
+                        .replace("%type%", type);
+
+                if (placeholderAPIInstalled) {
+                    targetMessage = PlaceholderAPI.setPlaceholders(targetPlayer, targetMessage);
+                }
+
+                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", targetMessage));
                 return;
             }
             case 1: {
                 // BONUS CLAIM BLOCKS
                 type = "bonus";
                 if (senderBonus < amount) {
-                    sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_enough_blocks")
+                    String message = plugin.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - senderBonus))
-                    ));
+                            .replace("%need%", String.valueOf(amount - senderBonus));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(sender, message);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", message));
                     return;
                 }
 
@@ -263,26 +346,43 @@ public class GpsendCommand implements CommandExecutor {
                 targetData.setBonusClaimBlocks(targetNewBonus);
 
                 if (all) {
-                    sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("sender"))
+                    String senderMessage = plugin.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type));
+                            .replace("%type%", type);
+
+                    if (placeholderAPIInstalled) {
+                        senderMessage = PlaceholderAPI.setPlaceholders(sender, senderMessage);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", senderMessage));
                 }
-                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("receiver"))
+
+                String targetMessage = plugin.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type)
-                );
+                        .replace("%type%", type);
+
+                if (placeholderAPIInstalled) {
+                    targetMessage = PlaceholderAPI.setPlaceholders(targetPlayer, targetMessage);
+                }
+
+                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", targetMessage));
                 return;
             }
             case 2: {
                 // ACCRUED CLAIM BLOCKS
                 type = "accrued";
                 if (senderAccrued < amount) {
-                    sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_enough_blocks")
+                    String message = plugin.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - senderAccrued))
-                    ));
+                            .replace("%need%", String.valueOf(amount - senderAccrued));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(sender, message);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", message));
                     return;
                 }
 
@@ -293,16 +393,28 @@ public class GpsendCommand implements CommandExecutor {
                 targetData.setAccruedClaimBlocks(targetNewAccrued);
 
                 if (all) {
-                    sender.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("sender"))
+                    String senderMessage = plugin.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type));
+                            .replace("%type%", type);
+
+                    if (placeholderAPIInstalled) {
+                        senderMessage = PlaceholderAPI.setPlaceholders(sender, senderMessage);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", senderMessage));
                 }
-                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("receiver"))
+
+                String targetMessage = plugin.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type)
-                );
+                        .replace("%type%", type);
+
+                if (placeholderAPIInstalled) {
+                    targetMessage = PlaceholderAPI.setPlaceholders(targetPlayer, targetMessage);
+                }
+
+                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", targetMessage));
                 return;
             }
         }

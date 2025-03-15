@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import me.clip.placeholderapi.PlaceholderAPI;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class AmountGUI {
 
     private final GPSend instance = GPSend.getInstance();
+    private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
     private Map<UUID, Integer> playerAmounts = new HashMap<>();
     public Map<UUID, Integer> getPlayerAmounts() {
         return playerAmounts;
@@ -26,7 +28,13 @@ public class AmountGUI {
     public void open(Player executor, String mode) {
         playerAmounts.putIfAbsent(executor.getUniqueId(), 0);
         int amount = playerAmounts.get(executor.getUniqueId());
-        Inventory inventory = Bukkit.createInventory(null, 27, ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_title")));
+        String title;
+        if (placeholderAPIInstalled) {
+            title = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui3_title")));
+        } else {
+            title = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_title"));
+        }
+        Inventory inventory = Bukkit.createInventory(null, 27, title);
 
         // Create a paper item in slot 13 that displays the current count
         ItemStack countPaper = new ItemStack(Material.PAPER);
@@ -115,7 +123,13 @@ public class AmountGUI {
         ItemStack confirm = new ItemStack(Material.LIME_WOOL);
         ItemMeta confirmMeta = confirm.getItemMeta();
         if (confirmMeta != null) {
-            confirmMeta.setDisplayName(ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_confirm_name")));
+            String confirmTitle;
+            if (placeholderAPIInstalled) {
+                confirmTitle = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui3_confirm_name")));
+            } else {
+                confirmTitle = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_confirm_name"));
+            }
+            confirmMeta.setDisplayName(confirmTitle);
             confirm.setItemMeta(confirmMeta);
         }
         inventory.setItem(26, confirm);

@@ -135,13 +135,12 @@ public class GUIInteract implements Listener {
         }
 
         // Handle adjustments to the amount
-        if (displayName.equals(ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_confirm_name")))
-                || displayName.equals("Confirm")) {
+        if (clicked.getType() == Material.LIME_WOOL) {
             instance.getGuiManager().getAmountGUI().close(p);
             p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
 
             // Execute the gpsend command based on the mode
-            if ("ALL".equals(mode)) {
+            if (instance.getConfig().getString("gui3_info_mode_all").equals(mode)) {
                 p.performCommand("gpsend all " + amount);
             } else {
                 p.performCommand("gpsend player " + mode + " " + amount);

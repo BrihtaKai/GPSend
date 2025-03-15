@@ -2,6 +2,7 @@ package driven.by.data.gpsend.command;
 
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.ColorFormat;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,13 +17,18 @@ import java.util.List;
 public class GpsendAdmin extends TabCompleter implements CommandExecutor {
 
     private final GPSend instance = GPSend.getInstance();
+    private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
 
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (!player.hasPermission("gpsend.admin") && !player.isOp()) {
-                player.sendMessage(ColorFormat.stringColorise("&#", GPSend.getInstance().getConfig().getString("no_permission")));
+                if (placeholderAPIInstalled) {
+                    player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("no_permission"))));
+                } else {
+                    player.sendMessage(ColorFormat.stringColorise("&#", instance.getConfig().getString("no_permission")));
+                }
                 return false;
             }
         }

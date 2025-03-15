@@ -50,6 +50,7 @@ public final class GPSend extends JavaPlugin {
     private static GPSend instance;
     private GUIManager guiManager;
     private AliasManager aliasManager;
+    public boolean placeholderAPIInstalled;
     private static final String SPIGOT_RESOURCE_ID = "115468";
 
     public GPSend() {
@@ -70,6 +71,12 @@ public final class GPSend extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            placeholderAPIInstalled = true;
+        } else {
+            placeholderAPIInstalled = false;
+        }
+
         this.guiManager = new GUIManager(instance);
         this.aliasManager = new AliasManager();
         Bukkit.getPluginManager().registerEvents(new GUIInteract(), this);
@@ -89,18 +96,30 @@ public final class GPSend extends JavaPlugin {
         Objects.requireNonNull(getCommand("gpsend-admin")).setTabCompleter(new GpsendAdmin());
         aliasManager.gpsendAliasRegister();
 
-        Bukkit.getLogger().info("GPSend has been enabled!");
+        Bukkit.getLogger().info("\n" +
+                "╭━━━┳━━━┳━━━╮╱╱╱╱╱╱╱╭╮\n" +
+                "┃╭━╮┃╭━╮┃╭━╮┃╱╱╱╱╱╱╱┃┃\n" +
+                "┃┃╱╰┫╰━╯┃╰━━┳━━┳━╮╭━╯┃\n" +
+                "┃┃╭━┫╭━━┻━━╮┃┃━┫╭╮┫╭╮┃\n" +
+                "┃╰┻━┃┃╱╱┃╰━╯┃┃━┫┃┃┃╰╯┃\n" +
+                "╰━━━┻╯╱╱╰━━━┻━━┻╯╰┻━━╯ has been enabled!\n");
 
 
     }
 
     @Override
     public void onDisable() {
-
+        Bukkit.getLogger().info("\n" +
+                "╭━━━┳━━━┳━━━╮╱╱╱╱╱╱╱╭╮\n" +
+                "┃╭━╮┃╭━╮┃╭━╮┃╱╱╱╱╱╱╱┃┃\n" +
+                "┃┃╱╰┫╰━╯┃╰━━┳━━┳━╮╭━╯┃\n" +
+                "┃┃╭━┫╭━━┻━━╮┃┃━┫╭╮┫╭╮┃\n" +
+                "┃╰┻━┃┃╱╱┃╰━╯┃┃━┫┃┃┃╰╯┃\n" +
+                "╰━━━┻╯╱╱╰━━━┻━━┻╯╰┻━━╯ has been disabled!\n");
     }
 
     private void initMetrics() {
-        int pluginId = 00000; // <-- Metrics plugin ID
+        int pluginId = 22118; // <-- Metrics plugin ID
         new Metrics(this, pluginId);
     }
 

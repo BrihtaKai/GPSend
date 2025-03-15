@@ -3,6 +3,7 @@ package driven.by.data.gpsend.gui;
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.ColorFormat;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,6 +18,7 @@ import java.util.*;
 public class PlayerListGUI {
 
     private final GPSend instance = GPSend.getInstance();
+    private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
     private Map<UUID, Integer> playerPages = new HashMap<>();
 
     public Map<UUID, Integer> getPlayerPages() { return playerPages; }
@@ -24,7 +26,13 @@ public class PlayerListGUI {
 
     public void open(Player executor, int page) {
         playerPages.put(executor.getUniqueId(), page);
-        Inventory inv = Bukkit.createInventory(null, 54, ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_title")));
+        String title;
+        if (placeholderAPIInstalled) {
+            title = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_title")));
+        } else {
+            title = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_title"));
+        }
+        Inventory inv = Bukkit.createInventory(null, 54, title);
 
         ItemStack line = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta line_meta = line.getItemMeta();
@@ -62,7 +70,13 @@ public class PlayerListGUI {
             ItemStack prevPage = new ItemStack(Material.ARROW);
             ItemMeta prevMeta = prevPage.getItemMeta();
             if (prevMeta != null) {
-                prevMeta.setDisplayName(ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_prev_page")));
+                String prevMetaTtitle;
+                if (placeholderAPIInstalled) {
+                    prevMetaTtitle = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_prev_page")));
+                } else {
+                    prevMetaTtitle = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_prev_page"));
+                }
+                prevMeta.setDisplayName(prevMetaTtitle);
                 prevPage.setItemMeta(prevMeta);
             }
             inv.setItem(45, prevPage);
@@ -71,7 +85,13 @@ public class PlayerListGUI {
             ItemStack nextPage = new ItemStack(Material.ARROW);
             ItemMeta nextMeta = nextPage.getItemMeta();
             if (nextMeta != null) {
-                nextMeta.setDisplayName(ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_next_page")));
+                String nextMetaTtitle;
+                if (placeholderAPIInstalled) {
+                    nextMetaTtitle = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_next_page")));
+                } else {
+                    nextMetaTtitle = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_next_page"));
+                }
+                nextMeta.setDisplayName(nextMetaTtitle);
                 nextPage.setItemMeta(nextMeta);
             }
             inv.setItem(53, nextPage);

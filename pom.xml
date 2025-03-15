@@ -6,7 +6,7 @@
 
   <groupId>driven.by.data</groupId>
   <artifactId>GPSend</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
   <packaging>jar</packaging>
 
   <name>GPSend</name>
@@ -67,6 +67,7 @@
                     </archive>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -89,6 +90,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
         </plugins>
         <resources>
             <resource>
@@ -110,6 +112,10 @@
       <repository>
           <id>jitpack.io</id>
           <url>https://jitpack.io</url>
+      </repository>
+      <repository>
+          <id>placeholderapi</id>
+          <url>https://repo.extendedclip.com/releases/</url>
       </repository>
   </repositories>
 
@@ -133,10 +139,10 @@
           <scope>compile</scope>
       </dependency>
       <dependency>
-          <groupId>org.jetbrains</groupId>
-          <artifactId>annotations</artifactId>
-          <version>24.0.1</version>
-          <scope>compile</scope>
+          <groupId>me.clip</groupId>
+          <artifactId>placeholderapi</artifactId>
+          <version>2.11.6</version>
+          <scope>provided</scope>
       </dependency>
   </dependencies>
 </project>
