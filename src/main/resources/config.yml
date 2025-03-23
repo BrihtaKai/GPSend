@@ -61,6 +61,12 @@ command_alias:
 # gui2_next_page: Name of the next page button (in player select gui)
 # gui3_title: Title of the amount selector gui
 # gui3_confirm_name: Name of the confirm button (in amount selector gui)
+# gui3_info_item_name: Name of the info item (in amount selector gui) %mode% - will be replaced with targetname or all_mode_name
+# all_mode_name: Name of the all mode button (in amount selector gui) <- this can replace %mode in gui3_info_item_name
+# gui3_info_item_lore_player: Lore of the info item (in amount selector gui) <- this lore is displayed when sending claimblocks to specific player
+# gui3_info_item_lore_all: Lore of the info item (in amount selector gui) <- this lore is displayed when sending claimblocks to all players
+# affordable_no: Name of the not affordable button (in amount selector gui) <- this can replace %affordable%
+# affordable_yes: Name of the affordable button (in amount selector gui) <- this can replace %affordable%
 # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
 gui1_title: "&6&lGPSend - Choose Type"
 gui1_player_name: "&6Player"
@@ -77,7 +83,25 @@ gui2_prev_page: "&bPrevious Page"
 gui2_next_page: "&bNext Page"
 gui3_title: "&6&lGPSend - Amount Selector"
 gui3_confirm_name: "&aConfirm"
-gui3_info_mode_all: "ALL" #THIS APPEARS ONLY WHEN SENDING TO EVERYONE ;; >>DO NOT USE COLORS<< ;; DO NOT USE THESE CHARACTERS: '0-9,:' ;; RECOMMENDED TO BE UPPER CASE
+gui3_info_item_name: "&f(&e%mode%&f)"
+all_mode_name: "ALL"
+gui3_info_item_lore_player: # %amount% - will be replaced with amount ;; %affordable% - will be replaced with affordable_no or affordable_yes
+  - "&fAmount: &e%amount%"
+  - "&f(%affordable%&f)"
+gui3_info_item_lore_all: # %total% - will be replaced with amount * (number of players - 1)
+  - "&fAmount: &e%amount%"
+  - "&fTotal: &e%total%"
+  - "&f(%affordable%&f)"
+affordable_no: "&c✖"
+affordable_yes: "&a✔"
+plus_1: "&2+1"
+plus_10: "&2+10"
+plus_100: "&2+100"
+plus_1000: "&2+1000"
+minus_1: "&c-1"
+minus_10: "&c-10"
+minus_100: "&c-100"
+minus_1000: "&c-1000"
 # ################################################################ #
 # ACCRUED claim blocks - These are claim blocks that a player earns over time, typically for free, as they play on the server.
 #  *Players accumulate accrued claim blocks at a rate set by the server admin (e.g., 100 blocks/hour of playtime).

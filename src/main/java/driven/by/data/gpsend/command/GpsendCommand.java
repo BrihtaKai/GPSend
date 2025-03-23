@@ -91,7 +91,7 @@ public class GpsendCommand implements CommandExecutor {
                     }
 
                     if (argLength == 1) {
-                        plugin.getGuiManager().getAmountGUI().open(player, plugin.getConfig().getString("gui3_info_mode_all"));
+                        plugin.getGuiManager().getAmountGUI().open(player, plugin.getConfig().getString("all_mode_name"));
                         return true;
                     }
                     if (argLength >= 2) {

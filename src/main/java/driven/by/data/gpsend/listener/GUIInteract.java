@@ -21,6 +21,8 @@ import java.util.logging.Level;
 public class GUIInteract implements Listener {
 
     private final GPSend instance = GPSend.getInstance();
+    // Add a set to track players who are reopening GUIs
+    private Set<UUID> reopeningGUI = new HashSet<>();
 
     /*
     GUI1 : CHOOSING GUI
@@ -81,9 +83,11 @@ public class GUIInteract implements Listener {
             String itemName = ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName());
             int currentPage = playerPages.getOrDefault(p.getUniqueId(), 0);
             if ("Previous Page".equals(itemName)) {
+                reopeningGUI.add(p.getUniqueId()); // Add player to reopening set
                 instance.getGuiManager().getPlayerListGUI().close(p);
                 instance.getGuiManager().getPlayerListGUI().open(p, currentPage - 1);
             } else if ("Next Page".equals(itemName)) {
+                reopeningGUI.add(p.getUniqueId()); // Add player to reopening set
                 instance.getGuiManager().getPlayerListGUI().close(p);
                 instance.getGuiManager().getPlayerListGUI().open(p, currentPage + 1);
             }
@@ -105,33 +109,14 @@ public class GUIInteract implements Listener {
             return;
         }
 
+        int amount = playerAmounts.getOrDefault(p.getUniqueId(), 0);
+        String mode = instance.getGuiManager().getAmountGUI().getPlayerModes().get(p.getUniqueId());
+
         String displayName = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
 
         // Check if the clicked inventory and slot 13 exist
         if (event.getClickedInventory() == null) {
             return;
-        }
-
-        ItemStack infoItem = event.getClickedInventory().getItem(13);
-        if (infoItem == null || !infoItem.hasItemMeta() || infoItem.getItemMeta().getDisplayName() == null) {
-            p.sendMessage(ChatColor.RED + "Error: Missing information in the GUI.");
-            return;
-        }
-
-        String info = infoItem.getItemMeta().getDisplayName();
-        String[] parts = info.split(":");
-        if (parts.length < 2) {
-            p.sendMessage(ChatColor.RED + "Error: Invalid format in the GUI.");
-            return;
-        }
-
-        String mode = parts[0].trim();
-        int amount;
-
-        try {
-            amount = Integer.parseInt(parts[1].trim());
-        } catch (NumberFormatException e) {
-            amount = playerAmounts.getOrDefault(p.getUniqueId(), 0);
         }
 
         // Handle adjustments to the amount
@@ -140,7 +125,7 @@ public class GUIInteract implements Listener {
             p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
 
             // Execute the gpsend command based on the mode
-            if (instance.getConfig().getString("gui3_info_mode_all").equals(mode)) {
+            if (instance.getConfig().getString("all_mode_name").equals(mode)) {
                 p.performCommand("gpsend all " + amount);
             } else {
                 p.performCommand("gpsend player " + mode + " " + amount);
@@ -213,6 +198,9 @@ public class GUIInteract implements Listener {
         // Update player's amount in the map
         playerAmounts.put(p.getUniqueId(), amount);
 
+        // Add player to reopening set before opening new inventory
+        reopeningGUI.add(p.getUniqueId());
+
         // Refresh the GUI with the updated amount
         instance.getGuiManager().getAmountGUI().open(p, mode);
     }
@@ -220,10 +208,21 @@ public class GUIInteract implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        if (PlayerStatusManager.hasPlayerStatus(player.getUniqueId(), "gui-status")) {
-            PlayerStatusManager.removePlayerStatus(player.getUniqueId(), "gui-status");
+        UUID playerUUID = player.getUniqueId();
+
+        // Check if this player is reopening a GUI
+        if (reopeningGUI.contains(playerUUID)) {
+            // Remove from set but don't clear status
+            reopeningGUI.remove(playerUUID);
+            return;
         }
-        instance.getGuiManager().getPlayerListGUI().getPlayerPages().remove(player.getUniqueId());
-        instance.getGuiManager().getAmountGUI().getPlayerAmounts().remove(player.getUniqueId());
+
+        // Only clear status if player actually has a GUI status
+        if (PlayerStatusManager.hasPlayerStatus(playerUUID, "gui-status")) {
+            PlayerStatusManager.removePlayerStatus(playerUUID, "gui-status");
+            instance.getGuiManager().getPlayerListGUI().getPlayerPages().remove(playerUUID);
+            instance.getGuiManager().getAmountGUI().getPlayerAmounts().remove(playerUUID);
+            instance.getGuiManager().getAmountGUI().getPlayerModes().remove(playerUUID);
+        }
     }
 }
