@@ -27,6 +27,7 @@ player_not_found: "&cTarget player not found or not online."
 invalid_type: "&cYou must choose between: PLAYER|ALL"
 no_permission: "&cYou don't have permission to use this command."
 cannot_send_to_self: "&cYou cannot send claimblocks to yourself."
+no_players: "&cNo online players found. (ignoring yourself)"
 # ################################################################ #
 # MESSAGE SECTION:
 # sender: This message is seen by sender when claimblocks were sent

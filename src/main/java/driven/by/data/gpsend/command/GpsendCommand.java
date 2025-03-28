@@ -142,6 +142,14 @@ public class GpsendCommand implements CommandExecutor {
 
         int onlinePlayersCount = Bukkit.getOnlinePlayers().size() - 1;
         int totalAmount = amount * onlinePlayersCount;
+        if (onlinePlayersCount == 0) {
+            if (placeholderAPIInstalled) {
+                player.sendMessage(ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, plugin.getConfig().getString("no_players"))));
+            } else {
+                player.sendMessage(ColorFormat.stringColorise("&#", plugin.getConfig().getString("no_players")));
+            }
+            return;
+        }
 
         int mode = plugin.getConfig().getInt("claimblocks_type");
         String type = "*";
