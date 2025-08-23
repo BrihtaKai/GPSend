@@ -6,7 +6,7 @@
 
   <groupId>driven.by.data</groupId>
   <artifactId>GPSend</artifactId>
-  <version>2.0.5</version>
+  <version>2.0.6</version>
   <packaging>jar</packaging>
 
   <name>GPSend</name>
@@ -67,30 +67,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.4.1</version>
-                <executions>
-                    <execution>
-                        <id>check-env</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireEnvironmentVariable>
-                                    <variableName>ALLOW_COMPILE</variableName>
-                                    <message>Compilation is not permitted.</message>
-                                </requireEnvironmentVariable>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
         </plugins>
         <resources>
             <resource>
@@ -123,7 +99,7 @@
       <dependency>
           <groupId>org.spigotmc</groupId>
           <artifactId>spigot-api</artifactId>
-          <version>1.21.7-R0.1-SNAPSHOT</version>
+          <version>1.21.8-R0.1-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
