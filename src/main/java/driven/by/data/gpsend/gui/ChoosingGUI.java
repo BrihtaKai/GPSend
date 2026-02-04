@@ -74,8 +74,12 @@ public class ChoosingGUI {
         }
         all.setItemMeta(all_meta);
 
-        inv.setItem(12, player);
-        inv.setItem(14, all);
+        if (executor.hasPermission("gpsend.sendall") || executor.isOp()) {
+            inv.setItem(12, player);
+            inv.setItem(14, all);
+        } else {
+            inv.setItem(13, player);
+        }
 
         executor.openInventory(inv);
         PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui1");
