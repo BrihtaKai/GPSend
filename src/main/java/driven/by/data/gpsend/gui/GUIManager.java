@@ -4,7 +4,6 @@ import driven.by.data.gpsend.GPSend;
 
 public class GUIManager {
 
-    private GPSend instance;
     private ChoosingGUI choosingGUI;
     private AmountGUI amountGUI;
     private PlayerListGUI playerListGUI;
@@ -13,7 +12,6 @@ public class GUIManager {
         this.choosingGUI = new ChoosingGUI();
         this.amountGUI = new AmountGUI();
         this.playerListGUI = new PlayerListGUI();
-        this.instance = instance;
 
     }
 

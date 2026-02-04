@@ -54,7 +54,7 @@ public final class GPSend extends JavaPlugin {
     private static final String SPIGOT_RESOURCE_ID = "115468";
 
     public GPSend() {
-        this.instance = this;
+        GPSend.instance = this;
     }
 
     public static GPSend getInstance() {

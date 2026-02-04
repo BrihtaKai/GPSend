@@ -14,13 +14,14 @@
 # Author: brihtakai (DrivenByData) # Support(discord): brihtec     #
 # Plugin Version: ${project.version}            # Requirements: GriefPrevention #
 # ################################################################ #
+
 # ERROR SECTION:
 # invalid_amount: Happens when player tries to use negative number
 # no_enough_blocks: Happens when player tries to send more blocks than he has
 # player_not_found: Happens when player tries to send blocks to non-existing player
 # invalid_type: Happens when player tries to choose invalid type (/gpsend <type>)
 # no_permission: Happens when player tries to use command without permission
-# |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+
 invalid_amount: "&cInvalid amount. Please enter a valid number"
 no_enough_blocks: "&cYou don't have enough %type% claim blocks to send! You need %need% more."
 player_not_found: "&cTarget player not found or not online."
@@ -28,29 +29,29 @@ invalid_type: "&cYou must choose between: PLAYER|ALL"
 no_permission: "&cYou don't have permission to use this command."
 cannot_send_to_self: "&cYou cannot send claimblocks to yourself."
 no_players: "&cNo online players found. (ignoring yourself)"
-# ################################################################ #
+
 # MESSAGE SECTION:
 # sender: This message is seen by sender when claimblocks were sent
 # receiver: This message is seen by receiver when claimblocks were sent
 # broadcast_message: This message is seen by everyone when /gpsendall is used
-# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+
 sender: "&aYou have just sent %amount% %type% claim blocks to %target%."
 receiver: "&a%player% just sent you %amount% %type% claim blocks."
 broadcast_message: "&6%player% sent %amount% %type% claim blocks to everyone online, which is %total% in total."
-# ################################################################ #
+
 # FUNCTIONALITY SETTINGS:
 # broadcast_on_sendall: If true, sends a broadcast message when /gpsendall is used
 # sendall_log: If true, when player uses /gpsendall for every player, it logs(to sender)
 # claimblocks_type: 0 = total, 1 = bonus, 2 = accrued, 3 = remaining ; Type of claimblocks plugin will be working with
-# check_for_updates: If true, checks for updates
-# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+# check_for_updates: If true, checks for updates every 24 hours
+
 broadcast_on_sendall: true
 sendall_log: false
-claimblocks_type: 0 # ( 0 = total, 1 = bonus, 2 = accrued, 3 = remaining ) + types explained in the bottom of the config
-check_for_updates: true # Every 24h
+claimblocks_type: 0
+check_for_updates: true
 command_alias:
   - "sendclaimblocks"
-# ################################################################ #
+
 # GUI SETTINGS:
 # gui1_title: Title of the type choose gui (all/player)
 # gui1_player_name: Name of the player button
@@ -68,7 +69,7 @@ command_alias:
 # gui3_info_item_lore_all: Lore of the info item (in amount selector gui) <- this lore is displayed when sending claimblocks to all players
 # affordable_no: Name of the not affordable button (in amount selector gui) <- this can replace %affordable%
 # affordable_yes: Name of the affordable button (in amount selector gui) <- this can replace %affordable%
-# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
+
 gui1_title: "&6&lGPSend - Choose Type"
 gui1_player_name: "&6Player"
 gui1_player_lore:
@@ -103,7 +104,7 @@ minus_1: "&c-1"
 minus_10: "&c-10"
 minus_100: "&c-100"
 minus_1000: "&c-1000"
-# ################################################################ #
+
 # ACCRUED claim blocks - These are claim blocks that a player earns over time, typically for free, as they play on the server.
 #  *Players accumulate accrued claim blocks at a rate set by the server admin (e.g., 100 blocks/hour of playtime).
 #  *These blocks are not bought or given as a bonus—they are earned naturally through gameplay.

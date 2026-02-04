@@ -59,7 +59,7 @@ public class AmountGUI {
 
             if (ChatColor.stripColor(mode).equalsIgnoreCase(ChatColor.stripColor(instance.getConfig().getString("all_mode_name")))) {
                 if (!instance.getConfig().getList("gui3_info_item_lore_all").isEmpty()) {
-                    ArrayList lore = new ArrayList<String>();
+                    ArrayList<String> lore = new ArrayList<String>();
                     for (int line = 0; line < instance.getConfig().getList("gui3_info_item_lore_all").size(); line++) {
                         String loreLine;
                         if (placeholderAPIInstalled) {
@@ -81,7 +81,7 @@ public class AmountGUI {
                 }
             } else {
                 if (!instance.getConfig().getList("gui3_info_item_lore_player").isEmpty()) {
-                    ArrayList lore = new ArrayList<String>();
+                    ArrayList<String> lore = new ArrayList<String>();
                     for (int line = 0; line < instance.getConfig().getList("gui3_info_item_lore_player").size(); line++) {
                         String loreLine;
                         if (placeholderAPIInstalled) {

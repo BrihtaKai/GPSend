@@ -5,7 +5,6 @@ import driven.by.data.gpsend.utils.ColorFormat;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChoosingGUI {
 
@@ -38,7 +36,7 @@ public class ChoosingGUI {
         }
         player_meta.setDisplayName(displayName1);
         if (!gpsend.getConfig().getList("gui1_player_lore").isEmpty()) {
-            ArrayList lore = new ArrayList<String>();
+            ArrayList<String> lore = new ArrayList<String>();
             for (int line = 0; line < gpsend.getConfig().getList("gui1_player_lore").size(); line++) {
                 String loreLine;
                 if (placeholderAPIInstalled) {
@@ -62,7 +60,7 @@ public class ChoosingGUI {
         }
         all_meta.setDisplayName(displayName2);
         if (!gpsend.getConfig().getList("gui1_all_lore").isEmpty()) {
-            ArrayList lore = new ArrayList<String>();
+            ArrayList<String> lore = new ArrayList<String>();
             for (int line = 0; line < gpsend.getConfig().getList("gui1_all_lore").size(); line++) {
                 String loreLine;
                 if (placeholderAPIInstalled) {

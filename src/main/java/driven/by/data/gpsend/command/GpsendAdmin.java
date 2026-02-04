@@ -3,7 +3,6 @@ package driven.by.data.gpsend.command;
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.ColorFormat;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
