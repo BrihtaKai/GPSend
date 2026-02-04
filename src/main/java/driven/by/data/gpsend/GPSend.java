@@ -28,7 +28,6 @@
 package driven.by.data.gpsend;
 
 import driven.by.data.gpsend.command.AliasManager;
-import driven.by.data.gpsend.command.GpsendAdmin;
 import driven.by.data.gpsend.command.GpsendCommand;
 import driven.by.data.gpsend.command.TabCompleter;
 import driven.by.data.gpsend.gui.GUIManager;
@@ -92,8 +91,6 @@ public final class GPSend extends JavaPlugin {
         //register commands
         Objects.requireNonNull(getCommand("gpsend")).setExecutor(new GpsendCommand());
         Objects.requireNonNull(getCommand("gpsend")).setTabCompleter(new TabCompleter());
-        Objects.requireNonNull(getCommand("gpsend-admin")).setExecutor(new GpsendAdmin());
-        Objects.requireNonNull(getCommand("gpsend-admin")).setTabCompleter(new GpsendAdmin());
         aliasManager.gpsendAliasRegister();
 
         Bukkit.getLogger().info("\n" +

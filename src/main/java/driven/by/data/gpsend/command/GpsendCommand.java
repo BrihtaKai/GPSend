@@ -18,6 +18,17 @@ public class GpsendCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+        // Allow reload from console
+        if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+            if (!(sender instanceof Player) && !(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
+                return false;
+            }
+            plugin.reloadConfig();
+            plugin.getAliasManager().gpsendAliasRegister();
+            sender.sendMessage(ColorFormat.stringColorise("&#", "Config reloaded!"));
+            return true;
+        }
+
         if (!(sender instanceof Player)) {
             plugin.getServer().getLogger().warning("[GPSend] Only players can use this command!");
             return false;

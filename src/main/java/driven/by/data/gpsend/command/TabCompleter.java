@@ -17,9 +17,12 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
 
         List<String> res = new ArrayList<>();
 
-        if (args.length == 1) { // First argument: "all" or "player"
+        if (args.length == 1) { // First argument: "all", "player", or "reload"
             res.add("all");
             res.add("player");
+            if (commandSender.hasPermission("gpsend.admin")) {
+                res.add("reload");
+            }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("all")) { // Second argument for "all": amount
                 res.add("<int>");
