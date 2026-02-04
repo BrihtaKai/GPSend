@@ -202,6 +202,23 @@ public class GpsendCommand implements CommandExecutor {
                 }
                 break;
             }
+            case 3: {
+                type = "remaining";
+                int senderRemaining = senderData.getRemainingClaimBlocks();
+                if (senderRemaining < totalAmount) {
+                    String message = plugin.getConfig().getString("no_enough_blocks")
+                            .replace("%type%", type)
+                            .replace("%need%", String.valueOf(totalAmount - senderRemaining));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(player, message);
+                    }
+
+                    player.sendMessage(ColorFormat.stringColorise("&#", message));
+                    return;
+                }
+                break;
+            }
         }
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -399,6 +416,56 @@ public class GpsendCommand implements CommandExecutor {
 
                 senderData.setAccruedClaimBlocks(senderNewAccrued);
                 targetData.setAccruedClaimBlocks(targetNewAccrued);
+
+                if (all) {
+                    String senderMessage = plugin.getConfig().getString("sender")
+                            .replace("%amount%", String.valueOf(amount))
+                            .replace("%target%", targetPlayer.getName())
+                            .replace("%type%", type);
+
+                    if (placeholderAPIInstalled) {
+                        senderMessage = PlaceholderAPI.setPlaceholders(sender, senderMessage);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", senderMessage));
+                }
+
+                String targetMessage = plugin.getConfig().getString("receiver")
+                        .replace("%player%", sender.getName())
+                        .replace("%amount%", String.valueOf(amount))
+                        .replace("%type%", type);
+
+                if (placeholderAPIInstalled) {
+                    targetMessage = PlaceholderAPI.setPlaceholders(targetPlayer, targetMessage);
+                }
+
+                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", targetMessage));
+                return;
+            }
+            case 3: {
+                // REMAINING CLAIM BLOCKS (available blocks not used in claims)
+                type = "remaining";
+                int senderRemaining = senderData.getRemainingClaimBlocks();
+                if (senderRemaining < amount) {
+                    String message = plugin.getConfig().getString("no_enough_blocks")
+                            .replace("%type%", type)
+                            .replace("%need%", String.valueOf(amount - senderRemaining));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(sender, message);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", message));
+                    return;
+                }
+
+                // For remaining blocks mode, we transfer from total but ensure sender has enough unused
+                // We'll transfer as bonus blocks to keep it simple
+                int senderNewBonus = senderBonus - amount;
+                int targetNewBonus = targetBonus + amount;
+
+                senderData.setBonusClaimBlocks(senderNewBonus);
+                targetData.setBonusClaimBlocks(targetNewBonus);
 
                 if (all) {
                     String senderMessage = plugin.getConfig().getString("sender")

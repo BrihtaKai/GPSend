@@ -41,12 +41,12 @@ broadcast_message: "&6%player% sent %amount% %type% claim blocks to everyone onl
 # FUNCTIONALITY SETTINGS:
 # broadcast_on_sendall: If true, sends a broadcast message when /gpsendall is used
 # sendall_log: If true, when player uses /gpsendall for every player, it logs(to sender)
-# claimblocks_type: 0 = total, 1 = bonus, 2 = accrued ; Type of claimblocks plugin will be working with
+# claimblocks_type: 0 = total, 1 = bonus, 2 = accrued, 3 = remaining ; Type of claimblocks plugin will be working with
 # check_for_updates: If true, checks for updates
 # ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| #
 broadcast_on_sendall: true
 sendall_log: false
-claimblocks_type: 0 # ( 0 = total, 1 = bonus, 2 = accrued ) + types explained in the bottom of the config
+claimblocks_type: 0 # ( 0 = total, 1 = bonus, 2 = accrued, 3 = remaining ) + types explained in the bottom of the config
 check_for_updates: true # Every 24h
 command_alias:
   - "sendclaimblocks"
@@ -113,4 +113,8 @@ minus_1000: "&c-1000"
 #  *They are added on top of accrued claim blocks and do not expire unless explicitly removed.
 # TOTAL claim blocks - The sum of a player’s accrued claim blocks and bonus claim blocks.
 #  *This is the total number of claim blocks a player can use to claim or expand land.
-#  * Total claim blocks = Accrued claim blocks + Bonus claim blocks
+#  *Total claim blocks = Accrued claim blocks + Bonus claim blocks
+# REMAINING claim blocks - The number of claim blocks available for new claims (not currently used in existing claims).
+#  *This is calculated as: Total claim blocks - Blocks used in existing claims
+#  *This prevents players from sending blocks that are already being used, avoiding negative balances.
+#  *Remaining claim blocks = Total claim blocks - Used claim blocks
