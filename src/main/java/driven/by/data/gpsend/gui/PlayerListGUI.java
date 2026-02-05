@@ -79,7 +79,7 @@ public class PlayerListGUI {
                 prevMeta.setDisplayName(prevMetaTtitle);
                 prevPage.setItemMeta(prevMeta);
             }
-            inv.setItem(45, prevPage);
+            inv.setItem(48, prevPage);
         }
         if (endIndex < onlinePlayers.size()) {
             ItemStack nextPage = new ItemStack(Material.ARROW);
@@ -94,8 +94,10 @@ public class PlayerListGUI {
                 nextMeta.setDisplayName(nextMetaTtitle);
                 nextPage.setItemMeta(nextMeta);
             }
-            inv.setItem(53, nextPage);
+            inv.setItem(50, nextPage);
         }
+
+        inv.setItem(53, InfoItem.build(executor));
 
         executor.openInventory(inv);
         PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui2");

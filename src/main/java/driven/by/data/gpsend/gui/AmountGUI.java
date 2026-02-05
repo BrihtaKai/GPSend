@@ -225,7 +225,7 @@ public class AmountGUI {
             }
             inventory.setItem(17, plus1000);
 
-            // Confirm button on slot 26
+            // Confirm button on slot 22
             ItemStack confirm = new ItemStack(Material.LIME_WOOL);
             ItemMeta confirmMeta = confirm.getItemMeta();
             if (confirmMeta != null) {
@@ -238,7 +238,9 @@ public class AmountGUI {
                 confirmMeta.setDisplayName(confirmTitle);
                 confirm.setItemMeta(confirmMeta);
             }
-            inventory.setItem(26, confirm);
+            inventory.setItem(22, confirm);
+
+            inventory.setItem(26, InfoItem.build(executor));
 
             executor.openInventory(inventory);
             PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui3");

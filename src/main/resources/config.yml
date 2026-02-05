@@ -88,7 +88,7 @@ minus_1000: "&c-1000"
 # invalid_type: Happens when player tries to choose invalid type (/gpsend <type>)
 # no_permission: Happens when player tries to use command without permission
 
-invalid_amount: "&cInvalid amount. Please enter a valid number"
+invalid_amount: "&cInvalid amount. Please enter a valid number."
 no_enough_blocks: "&cYou don't have enough %type% claim blocks to send! You need %need% more."
 player_not_found: "&cTarget player not found or not online."
 invalid_type: "&cInvalid argument for command."

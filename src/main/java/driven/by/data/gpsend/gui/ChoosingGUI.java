@@ -81,6 +81,8 @@ public class ChoosingGUI {
             inv.setItem(13, player);
         }
 
+        inv.setItem(26, InfoItem.build(executor));
+
         executor.openInventory(inv);
         PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui1");
     }
