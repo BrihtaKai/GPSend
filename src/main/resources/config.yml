@@ -23,7 +23,7 @@
 
 broadcast_on_sendall: true
 sendall_log: false
-claimblocks_type: 0
+claimblocks_type: 4
 check_for_updates: true
 command_alias:
   - "sendclaimblocks"
