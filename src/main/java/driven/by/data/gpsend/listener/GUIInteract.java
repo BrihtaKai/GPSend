@@ -1,9 +1,7 @@
 package driven.by.data.gpsend.listener;
 
 import driven.by.data.gpsend.GPSend;
-import driven.by.data.gpsend.utils.ColorFormat;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,10 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import java.util.*;
-import java.util.logging.Level;
 
 public class GUIInteract implements Listener {
 
@@ -93,8 +88,6 @@ public class GUIInteract implements Listener {
             }
         } else if (clickedItem.getType() == Material.PLAYER_HEAD) {
             String targetName = ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName());
-            Player target = Bukkit.getPlayer(targetName);
-
             instance.getGuiManager().getPlayerListGUI().close(p);
             p.performCommand("gpsend player " + targetName);
         }

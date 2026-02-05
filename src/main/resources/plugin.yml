@@ -2,11 +2,18 @@ name: GPSend
 version: '${project.version}'
 main: driven.by.data.gpsend.GPSend
 api-version: '1.13'
-commands:
-  gpsend:
-    description: Send claim blocks.
-  gpsend-admin:
-    description: Gpsend admin command.
 
 depend: [GriefPrevention]
 softdepend: [PlaceholderAPI]
+
+commands:
+  gpsend:
+    description: Send claim blocks.
+
+permissions:
+  gpsend.send:
+    description: Send claim blocks to a player.
+  gpsend.sendall:
+    description: Send claim blocks to all players.
+  gpsend.admin:
+    description: Reload the plugin configuration.

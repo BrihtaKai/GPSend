@@ -36,7 +36,7 @@ public class PlayerListGUI {
 
         ItemStack line = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta line_meta = line.getItemMeta();
-        line_meta.setDisplayName(null);
+        line_meta.setDisplayName(ChatColor.DARK_GRAY + "");
         line.setItemMeta(line_meta);
         for (int i = 36; i != 45; i++) {
             inv.setItem(i, line);
@@ -44,7 +44,7 @@ public class PlayerListGUI {
 
         ItemStack pageint = new ItemStack(Material.PAPER);
         ItemMeta page_meta = pageint.getItemMeta();
-        page_meta.setItemName(String.valueOf(page));
+        page_meta.setItemName(ChatColor.GOLD + "Page " + (page + 1));
         pageint.setItemMeta(page_meta);
         inv.setItem(49, pageint);
 
@@ -79,7 +79,7 @@ public class PlayerListGUI {
                 prevMeta.setDisplayName(prevMetaTtitle);
                 prevPage.setItemMeta(prevMeta);
             }
-            inv.setItem(45, prevPage);
+            inv.setItem(48, prevPage);
         }
         if (endIndex < onlinePlayers.size()) {
             ItemStack nextPage = new ItemStack(Material.ARROW);
@@ -94,8 +94,10 @@ public class PlayerListGUI {
                 nextMeta.setDisplayName(nextMetaTtitle);
                 nextPage.setItemMeta(nextMeta);
             }
-            inv.setItem(53, nextPage);
+            inv.setItem(50, nextPage);
         }
+
+        inv.setItem(53, InfoItem.build(executor));
 
         executor.openInventory(inv);
         PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui2");

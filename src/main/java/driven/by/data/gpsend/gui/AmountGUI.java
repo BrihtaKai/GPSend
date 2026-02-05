@@ -59,7 +59,7 @@ public class AmountGUI {
 
             if (ChatColor.stripColor(mode).equalsIgnoreCase(ChatColor.stripColor(instance.getConfig().getString("all_mode_name")))) {
                 if (!instance.getConfig().getList("gui3_info_item_lore_all").isEmpty()) {
-                    ArrayList lore = new ArrayList<String>();
+                    ArrayList<String> lore = new ArrayList<String>();
                     for (int line = 0; line < instance.getConfig().getList("gui3_info_item_lore_all").size(); line++) {
                         String loreLine;
                         if (placeholderAPIInstalled) {
@@ -81,7 +81,7 @@ public class AmountGUI {
                 }
             } else {
                 if (!instance.getConfig().getList("gui3_info_item_lore_player").isEmpty()) {
-                    ArrayList lore = new ArrayList<String>();
+                    ArrayList<String> lore = new ArrayList<String>();
                     for (int line = 0; line < instance.getConfig().getList("gui3_info_item_lore_player").size(); line++) {
                         String loreLine;
                         if (placeholderAPIInstalled) {
@@ -225,7 +225,7 @@ public class AmountGUI {
             }
             inventory.setItem(17, plus1000);
 
-            // Confirm button on slot 26
+            // Confirm button on slot 22
             ItemStack confirm = new ItemStack(Material.LIME_WOOL);
             ItemMeta confirmMeta = confirm.getItemMeta();
             if (confirmMeta != null) {
@@ -238,7 +238,9 @@ public class AmountGUI {
                 confirmMeta.setDisplayName(confirmTitle);
                 confirm.setItemMeta(confirmMeta);
             }
-            inventory.setItem(26, confirm);
+            inventory.setItem(22, confirm);
+
+            inventory.setItem(26, InfoItem.build(executor));
 
             executor.openInventory(inventory);
             PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui3");
@@ -255,13 +257,19 @@ public class AmountGUI {
     public String canSend(int amount, Player executor) {
         int playerAmount;
         if (instance.getConfig().getInt("claimblocks_type") == 0) {
-            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
-        } else if (instance.getConfig().getInt("claimblocks_type") == 1) {
-            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
-        } else if (instance.getConfig().getInt("claimblocks_type") == 2) {
             int accrued = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
             int bonus = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
             playerAmount = accrued + bonus;
+        } else if (instance.getConfig().getInt("claimblocks_type") == 1) {
+            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
+        } else if (instance.getConfig().getInt("claimblocks_type") == 2) {
+            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
+        } else if (instance.getConfig().getInt("claimblocks_type") == 3) {
+            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getRemainingClaimBlocks();
+        } else if (instance.getConfig().getInt("claimblocks_type") == 4) {
+            int remaining = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getRemainingClaimBlocks();
+            int bonus = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
+            playerAmount = Math.min(remaining, bonus);
         } else {
             playerAmount = 0;
         }
