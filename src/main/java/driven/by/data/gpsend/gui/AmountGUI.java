@@ -255,13 +255,13 @@ public class AmountGUI {
     public String canSend(int amount, Player executor) {
         int playerAmount;
         if (instance.getConfig().getInt("claimblocks_type") == 0) {
-            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
-        } else if (instance.getConfig().getInt("claimblocks_type") == 1) {
-            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
-        } else if (instance.getConfig().getInt("claimblocks_type") == 2) {
             int accrued = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
             int bonus = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
             playerAmount = accrued + bonus;
+        } else if (instance.getConfig().getInt("claimblocks_type") == 1) {
+            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
+        } else if (instance.getConfig().getInt("claimblocks_type") == 2) {
+            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
         } else if (instance.getConfig().getInt("claimblocks_type") == 3) {
             playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getRemainingClaimBlocks();
         } else if (instance.getConfig().getInt("claimblocks_type") == 4) {
