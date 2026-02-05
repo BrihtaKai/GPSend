@@ -225,6 +225,24 @@ public class GpsendCommand implements CommandExecutor {
                 }
                 break;
             }
+            case 4: {
+                type = "remaining-bonus";
+                int senderRemaining = senderData.getRemainingClaimBlocks();
+                int maxSendable = Math.min(senderRemaining, senderBonus);
+                if (maxSendable < totalAmount) {
+                    String message = plugin.getConfig().getString("no_enough_blocks")
+                            .replace("%type%", type)
+                            .replace("%need%", String.valueOf(totalAmount - maxSendable));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(player, message);
+                    }
+
+                    player.sendMessage(ColorFormat.stringColorise("&#", message));
+                    return;
+                }
+                break;
+            }
         }
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -465,8 +483,59 @@ public class GpsendCommand implements CommandExecutor {
                     return;
                 }
 
-                // For remaining blocks mode, we transfer from total but ensure sender has enough unused
-                // We'll transfer as bonus blocks to keep it simple
+                // For remaining blocks mode, deplete bonus first, then accrued
+                int bonusToUse = Math.min(senderBonus, amount);
+                int accruedToUse = amount - bonusToUse;
+
+                senderData.setBonusClaimBlocks(senderBonus - bonusToUse);
+                senderData.setAccruedClaimBlocks(senderAccrued - accruedToUse);
+
+                int targetNewBonus = targetBonus + amount;
+                targetData.setBonusClaimBlocks(targetNewBonus);
+
+                if (all) {
+                    String senderMessage = plugin.getConfig().getString("sender")
+                            .replace("%amount%", String.valueOf(amount))
+                            .replace("%target%", targetPlayer.getName())
+                            .replace("%type%", type);
+
+                    if (placeholderAPIInstalled) {
+                        senderMessage = PlaceholderAPI.setPlaceholders(sender, senderMessage);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", senderMessage));
+                }
+
+                String targetMessage = plugin.getConfig().getString("receiver")
+                        .replace("%player%", sender.getName())
+                        .replace("%amount%", String.valueOf(amount))
+                        .replace("%type%", type);
+
+                if (placeholderAPIInstalled) {
+                    targetMessage = PlaceholderAPI.setPlaceholders(targetPlayer, targetMessage);
+                }
+
+                targetPlayer.sendMessage(ColorFormat.stringColorise("&#", targetMessage));
+                return;
+            }
+            case 4: {
+                // REMAINING + BONUS CAP (min of remaining and bonus)
+                type = "remaining-bonus";
+                int senderRemaining = senderData.getRemainingClaimBlocks();
+                int maxSendable = Math.min(senderRemaining, senderBonus);
+                if (maxSendable < amount) {
+                    String message = plugin.getConfig().getString("no_enough_blocks")
+                            .replace("%type%", type)
+                            .replace("%need%", String.valueOf(amount - maxSendable));
+
+                    if (placeholderAPIInstalled) {
+                        message = PlaceholderAPI.setPlaceholders(sender, message);
+                    }
+
+                    sender.sendMessage(ColorFormat.stringColorise("&#", message));
+                    return;
+                }
+
                 int senderNewBonus = senderBonus - amount;
                 int targetNewBonus = targetBonus + amount;
 

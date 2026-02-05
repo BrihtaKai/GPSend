@@ -264,6 +264,10 @@ public class AmountGUI {
             playerAmount = accrued + bonus;
         } else if (instance.getConfig().getInt("claimblocks_type") == 3) {
             playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getRemainingClaimBlocks();
+        } else if (instance.getConfig().getInt("claimblocks_type") == 4) {
+            int remaining = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getRemainingClaimBlocks();
+            int bonus = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
+            playerAmount = Math.min(remaining, bonus);
         } else {
             playerAmount = 0;
         }
