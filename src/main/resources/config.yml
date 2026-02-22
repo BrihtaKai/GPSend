@@ -45,6 +45,14 @@ command_alias:
 # gui3_info_item_lore_all: Lore of the info item (in amount selector gui) <- this lore is displayed when sending claimblocks to all players
 # affordable_no: Name of the not affordable button (in amount selector gui) <- this can replace %affordable%
 # affordable_yes: Name of the affordable button (in amount selector gui) <- this can replace %affordable%
+# amount_1: Quantity for the smallest increment/decrement button
+# amount_2: Quantity for the second increment/decrement button
+# amount_3: Quantity for the third increment/decrement button
+# amount_4: Quantity for the largest increment/decrement button
+# plus_1/minus_1: Display names for buttons using amount_1
+# plus_10/minus_10: Display names for buttons using amount_2
+# plus_100/minus_100: Display names for buttons using amount_3
+# plus_1000/minus_1000: Display names for buttons using amount_4
 
 gui1_title: "&6&lGPSend"
 gui1_player_name: "&6Player"
@@ -72,14 +80,18 @@ gui3_info_item_lore_all: # %total% - will be replaced with amount * (number of p
   - "&f(%affordable%&f)"
 affordable_no: "&c✖"
 affordable_yes: "&a✔"
+amount_1: 1
+amount_2: 10
+amount_3: 100
+amount_4: 1000
 plus_1: "&2+1"
-plus_10: "&2+10"
-plus_100: "&2+100"
-plus_1000: "&2+1000"
+plus_2: "&2+10"
+plus_3: "&2+100"
+plus_4: "&2+1000"
 minus_1: "&c-1"
-minus_10: "&c-10"
-minus_100: "&c-100"
-minus_1000: "&c-1000"
+minus_2: "&c-10"
+minus_3: "&c-100"
+minus_4: "&c-1000"
 
 # ERROR SECTION:
 # invalid_amount: Happens when player tries to use negative number
