@@ -16,15 +16,17 @@
 # ################################################################ #
 
 # FUNCTIONALITY SETTINGS:
-# broadcast_on_sendall: If true, sends a broadcast message when /gpsendall is used
-# sendall_log: If true, when player uses /gpsendall for every player, it logs(to sender)
+# broadcast_on_sendall: If true, sends a broadcast message when "/gpsend all" is used
+# sendall_log: If true, when player uses "/gpsend all" for every player, it logs(to sender)
 # claimblocks_type: Choose from which set of blocks to remove from; 0 = total, 1 = bonus, 2 = accrued, 3 = remaining, 4 = remaining-bonus-cap ; Check the end of this file for more info about claim blocks types
 # check_for_updates: If true, checks for updates every 24 hours
+# separate_commands: If true, doesn't register command aliases (only /gpsend will work)
 
 broadcast_on_sendall: true
 sendall_log: false
 claimblocks_type: 4
 check_for_updates: true
+separate_commands: false
 command_alias:
   - "sendclaimblocks"
 
@@ -111,7 +113,7 @@ no_players: "&cNo online players found. (ignoring yourself)"
 # MESSAGE SECTION:
 # sender: This message is seen by sender when claimblocks were sent
 # receiver: This message is seen by receiver when claimblocks were sent
-# broadcast_message: This message is seen by everyone when /gpsendall is used
+# broadcast_message: This message is seen by everyone when "/gpsend all" is used
 
 sender: "&aYou have just sent %amount% %type% claim blocks to %target%."
 receiver: "&a%player% just sent you %amount% %type% claim blocks."
