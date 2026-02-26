@@ -1,8 +1,9 @@
 # GPSend - GriefPrevention Addon!
 
-A simple addon that allows players to transfer claim blocks to each other!
+A simple addon that allows players to transfer claim blocks to each other! <br>
+Feel free to contribute as I currently don't have time to maintain.
 
-Download releases: https://github.com/BrihtaKai/GPSend/releases
+Download releases: https://github.com/BrihtaKai/GPSend/releases  <br>
 Download dev builds: https://github.com/BrihtaKai/GPSend/actions
 
 ## Requirements
