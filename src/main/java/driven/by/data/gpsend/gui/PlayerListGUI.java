@@ -44,7 +44,7 @@ public class PlayerListGUI {
 
         ItemStack pageint = new ItemStack(Material.PAPER);
         ItemMeta page_meta = pageint.getItemMeta();
-        page_meta.setItemName(ChatColor.GOLD + "Page " + (page + 1));
+        page_meta.setDisplayName(ChatColor.GOLD + "Page " + (page + 1));
         pageint.setItemMeta(page_meta);
         inv.setItem(49, pageint);
 

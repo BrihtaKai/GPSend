@@ -105,51 +105,51 @@ public class AmountGUI {
         inventory.setItem(13, countPaper);
 
         // Decrement buttons
-        // Slot 9: -1000
+        // Slot 9
         ItemStack minus1000 = new ItemStack(Material.REDSTONE);
         ItemMeta minus1000Meta = minus1000.getItemMeta();
         if (minus1000Meta != null) {
             String displayName;
             if (placeholderAPIInstalled) {
-                displayName = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_1000")));
+                displayName = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_4")));
             } else {
-                displayName = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_1000"));
+                displayName = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_4"));
             }
             minus1000Meta.setDisplayName(displayName);
             minus1000.setItemMeta(minus1000Meta);
             inventory.setItem(9, minus1000);
 
-            // Slot 10: -100
+            // Slot 10
             ItemStack minus100 = new ItemStack(Material.REDSTONE);
             ItemMeta minus100Meta = minus100.getItemMeta();
             if (minus100Meta != null) {
                 String displayName2;
                 if (placeholderAPIInstalled) {
-                    displayName2 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_100")));
+                    displayName2 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_3")));
                 } else {
-                    displayName2 = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_100"));
+                    displayName2 = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_3"));
                 }
                 minus100Meta.setDisplayName(displayName2);
                 minus100.setItemMeta(minus100Meta);
             }
             inventory.setItem(10, minus100);
 
-            // slot 11: -10
+            // slot 11
             ItemStack minus10 = new ItemStack(Material.REDSTONE);
             ItemMeta minus10Meta = minus10.getItemMeta();
             if (minus10Meta != null) {
                 String displayName3;
                 if (placeholderAPIInstalled) {
-                    displayName3 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_10")));
+                    displayName3 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_2")));
                 } else {
-                    displayName3 = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_10"));
+                    displayName3 = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_2"));
                 }
                 minus10Meta.setDisplayName(displayName3);
                 minus10.setItemMeta(minus10Meta);
             }
             inventory.setItem(11, minus10);
 
-            // Slot 12: -1
+            // Slot 12
             ItemStack minus1 = new ItemStack(Material.REDSTONE);
             ItemMeta minus1Meta = minus1.getItemMeta();
             if (minus1Meta != null) {
@@ -165,7 +165,7 @@ public class AmountGUI {
             inventory.setItem(12, minus1);
 
             // Increment buttons
-            // Slot 14: +1
+            // Slot 14
             ItemStack plus1 = new ItemStack(Material.EMERALD);
             ItemMeta plus1Meta = plus1.getItemMeta();
             if (plus1Meta != null) {
@@ -180,45 +180,45 @@ public class AmountGUI {
             }
             inventory.setItem(14, plus1);
 
-            // Slot 15: +10
+            // Slot 15
             ItemStack plus10 = new ItemStack(Material.EMERALD);
             ItemMeta plus10Meta = plus10.getItemMeta();
             if (plus10Meta != null) {
                 String displayName6;
                 if (placeholderAPIInstalled) {
-                    displayName6 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_10")));
+                    displayName6 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_2")));
                 } else {
-                    displayName6 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_10"));
+                    displayName6 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_2"));
                 }
                 plus10Meta.setDisplayName(displayName6);
                 plus10.setItemMeta(plus10Meta);
             }
             inventory.setItem(15, plus10);
 
-            // Slot 16: +100
+            // Slot 16
             ItemStack plus100 = new ItemStack(Material.EMERALD);
             ItemMeta plus100Meta = plus100.getItemMeta();
             if (plus100Meta != null) {
                 String displayName7;
                 if (placeholderAPIInstalled) {
-                    displayName7 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_100")));
+                    displayName7 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_3")));
                 } else {
-                    displayName7 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_100"));
+                    displayName7 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_3"));
                 }
                 plus100Meta.setDisplayName(displayName7);
                 plus100.setItemMeta(plus100Meta);
             }
             inventory.setItem(16, plus100);
 
-            // Slot 17: +1000
+            // Slot 17
             ItemStack plus1000 = new ItemStack(Material.EMERALD);
             ItemMeta plus1000Meta = plus1000.getItemMeta();
             if (plus1000Meta != null) {
                 String displayName8;
                 if (placeholderAPIInstalled) {
-                    displayName8 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_1000")));
+                    displayName8 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_4")));
                 } else {
-                    displayName8 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_1000"));
+                    displayName8 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_4"));
                 }
                 plus1000Meta.setDisplayName(displayName8);
                 plus1000.setItemMeta(plus1000Meta);

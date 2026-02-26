@@ -14,7 +14,7 @@ public class AliasManager {
     public void gpsendAliasRegister() {
         PluginCommand gpsend = instance.getCommand("gpsend");
 
-        if (instance.getConfig().getBoolean("saperate_commands")) return;
+        if (instance.getConfig().getBoolean("separate_commands")) return;
 
         try {
             final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");

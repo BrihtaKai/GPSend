@@ -126,61 +126,65 @@ public class GUIInteract implements Listener {
             return;
         }
 
-        // Handle the amount adjustments
+        int amount1 = instance.getConfig().getInt("amount_1", 1);
+        int amount2 = instance.getConfig().getInt("amount_2", 10);
+        int amount3 = instance.getConfig().getInt("amount_3", 100);
+        int amount4 = instance.getConfig().getInt("amount_4", 1000);
+        
         switch (displayName) {
-            case "-1000": {
-                if (amount >= 1000) {
-                    amount -= 1000;
+            case "-amount4": {
+                if (amount >= amount4) {
+                    amount -= amount4;
                     p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 } else {
                     p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
                 }
                 break;
             }
-            case "-100": {
-                if (amount >= 100) {
-                    amount -= 100;
+            case "-amount3": {
+                if (amount >= amount3) {
+                    amount -= amount3;
                     p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 } else {
                     p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
                 }
                 break;
             }
-            case "-10": {
-                if (amount >= 10) {
-                    amount -= 10;
+            case "-amount2": {
+                if (amount >= amount2) {
+                    amount -= amount2;
                     p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 } else {
                     p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
                 }
                 break;
             }
-            case "-1": {
-                if (amount >= 1) {
-                    amount -= 1;
+            case "-amount1": {
+                if (amount >= amount1) {
+                    amount -= amount1;
                     p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 } else {
                     p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
                 }
                 break;
             }
-            case "+1": {
-                amount += 1;
+            case "+amount1": {
+                amount += amount1;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 break;
             }
-            case "+10": {
-                amount += 10;
+            case "+amount2": {
+                amount += amount2;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 break;
             }
-            case "+100": {
-                amount += 100;
+            case "+amount3": {
+                amount += amount3;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 break;
             }
-            case "+1000": {
-                amount += 1000;
+            case "+amount4": {
+                amount += amount4;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
                 break;
             }
