@@ -33,218 +33,33 @@ public class AmountGUI {
         playerAmounts.putIfAbsent(executor.getUniqueId(), 0);
         playerModes.putIfAbsent(executor.getUniqueId(), mode);
         int amount = playerAmounts.get(executor.getUniqueId());
-        String title;
-        if (placeholderAPIInstalled) {
-            title = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui3_title")));
-        } else {
-            title = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_title"));
-        }
+        
+        String title = getConfigString("gui3_title", executor);
         Inventory inventory = Bukkit.createInventory(null, 27, title);
 
-        // Create a paper item in slot 13 that displays the current count
-        ItemStack countPaper = new ItemStack(Material.PAPER);
-        ItemMeta paperMeta = countPaper.getItemMeta();
-        if (paperMeta != null) {
-            String countPaperName;
-            if (placeholderAPIInstalled) {
-                countPaperName = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui3_info_item_name")
-                        .replace("%mode%", mode))
-                );
-            } else {
-                countPaperName = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_info_item_name")
-                        .replace("%mode%", mode)
-                );
-            }
-            paperMeta.setDisplayName(countPaperName);
-
-            if (ChatColor.stripColor(mode).equalsIgnoreCase(ChatColor.stripColor(instance.getConfig().getString("all_mode_name")))) {
-                if (!instance.getConfig().getList("gui3_info_item_lore_all").isEmpty()) {
-                    ArrayList<String> lore = new ArrayList<String>();
-                    for (int line = 0; line < instance.getConfig().getList("gui3_info_item_lore_all").size(); line++) {
-                        String loreLine;
-                        if (placeholderAPIInstalled) {
-                            loreLine = PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getList("gui3_info_item_lore_all").get(line).toString()
-                                    .replace("%amount%", String.valueOf(amount))
-                                    .replace("%total%", String.valueOf(amount * (Bukkit.getOnlinePlayers().size() - 1)))
-                                    .replace("%affordable%", this.canSend(amount * (Bukkit.getOnlinePlayers().size() - 1), executor))
-                            );
-                        } else {
-                            loreLine = instance.getConfig().getList("gui3_info_item_lore_all").get(line).toString()
-                                    .replace("%amount%", String.valueOf(amount))
-                                    .replace("%total%", String.valueOf(amount * (Bukkit.getOnlinePlayers().size() - 1)))
-                                    .replace("%affordable%", this.canSend(amount * (Bukkit.getOnlinePlayers().size() - 1), executor)
-                            );
-                        }
-                        lore.add(loreLine);
-                    }
-                    paperMeta.setLore(ColorFormat.listColorise("&#", lore));
-                }
-            } else {
-                if (!instance.getConfig().getList("gui3_info_item_lore_player").isEmpty()) {
-                    ArrayList<String> lore = new ArrayList<String>();
-                    for (int line = 0; line < instance.getConfig().getList("gui3_info_item_lore_player").size(); line++) {
-                        String loreLine;
-                        if (placeholderAPIInstalled) {
-                            loreLine = PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getList("gui3_info_item_lore_player").get(line).toString()
-                                    .replace("%amount%", String.valueOf(amount))
-                                    .replace("%affordable%", this.canSend(amount, executor))
-                            );
-                        } else {
-                            loreLine = instance.getConfig().getList("gui3_info_item_lore_player").get(line).toString()
-                                    .replace("%amount%", String.valueOf(amount))
-                                    .replace("%affordable%", this.canSend(amount, executor)
-                            );
-                        }
-                        lore.add(loreLine);
-                    }
-                    paperMeta.setLore(ColorFormat.listColorise("&#", lore));
-                }
-            }
-            countPaper.setItemMeta(paperMeta);
-        }
+        // Create info item in slot 13
+        ItemStack countPaper = createInfoItem(executor, mode, amount);
         inventory.setItem(13, countPaper);
 
-        // Decrement buttons
-        // Slot 9
-        ItemStack minus1000 = new ItemStack(Material.REDSTONE);
-        ItemMeta minus1000Meta = minus1000.getItemMeta();
-        if (minus1000Meta != null) {
-            String displayName;
-            if (placeholderAPIInstalled) {
-                displayName = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_4")));
-            } else {
-                displayName = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_4"));
-            }
-            minus1000Meta.setDisplayName(displayName);
-            minus1000.setItemMeta(minus1000Meta);
-            inventory.setItem(9, minus1000);
+        // Create decrement buttons (slots 9-12, materials)
+        createButtonItem(Material.REDSTONE, "minus_4", 9, executor, inventory);
+        createButtonItem(Material.REDSTONE, "minus_3", 10, executor, inventory);
+        createButtonItem(Material.REDSTONE, "minus_2", 11, executor, inventory);
+        createButtonItem(Material.REDSTONE, "minus_1", 12, executor, inventory);
 
-            // Slot 10
-            ItemStack minus100 = new ItemStack(Material.REDSTONE);
-            ItemMeta minus100Meta = minus100.getItemMeta();
-            if (minus100Meta != null) {
-                String displayName2;
-                if (placeholderAPIInstalled) {
-                    displayName2 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_3")));
-                } else {
-                    displayName2 = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_3"));
-                }
-                minus100Meta.setDisplayName(displayName2);
-                minus100.setItemMeta(minus100Meta);
-            }
-            inventory.setItem(10, minus100);
+        // Create increment buttons (slots 14-17, materials)
+        createButtonItem(Material.EMERALD, "plus_1", 14, executor, inventory);
+        createButtonItem(Material.EMERALD, "plus_2", 15, executor, inventory);
+        createButtonItem(Material.EMERALD, "plus_3", 16, executor, inventory);
+        createButtonItem(Material.EMERALD, "plus_4", 17, executor, inventory);
 
-            // slot 11
-            ItemStack minus10 = new ItemStack(Material.REDSTONE);
-            ItemMeta minus10Meta = minus10.getItemMeta();
-            if (minus10Meta != null) {
-                String displayName3;
-                if (placeholderAPIInstalled) {
-                    displayName3 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_2")));
-                } else {
-                    displayName3 = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_2"));
-                }
-                minus10Meta.setDisplayName(displayName3);
-                minus10.setItemMeta(minus10Meta);
-            }
-            inventory.setItem(11, minus10);
+        // Create confirm button
+        createButtonItem(Material.LIME_WOOL, "gui3_confirm_name", 22, executor, inventory);
 
-            // Slot 12
-            ItemStack minus1 = new ItemStack(Material.REDSTONE);
-            ItemMeta minus1Meta = minus1.getItemMeta();
-            if (minus1Meta != null) {
-                String displayName4;
-                if (placeholderAPIInstalled) {
-                    displayName4 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("minus_1")));
-                } else {
-                    displayName4 = ColorFormat.stringColorise("&#", instance.getConfig().getString("minus_1"));
-                }
-                minus1Meta.setDisplayName(displayName4);
-                minus1.setItemMeta(minus1Meta);
-            }
-            inventory.setItem(12, minus1);
+        inventory.setItem(26, InfoItem.build(executor));
 
-            // Increment buttons
-            // Slot 14
-            ItemStack plus1 = new ItemStack(Material.EMERALD);
-            ItemMeta plus1Meta = plus1.getItemMeta();
-            if (plus1Meta != null) {
-                String displayName5;
-                if (placeholderAPIInstalled) {
-                    displayName5 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_1")));
-                } else {
-                    displayName5 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_1"));
-                }
-                plus1Meta.setDisplayName(displayName5);
-                plus1.setItemMeta(plus1Meta);
-            }
-            inventory.setItem(14, plus1);
-
-            // Slot 15
-            ItemStack plus10 = new ItemStack(Material.EMERALD);
-            ItemMeta plus10Meta = plus10.getItemMeta();
-            if (plus10Meta != null) {
-                String displayName6;
-                if (placeholderAPIInstalled) {
-                    displayName6 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_2")));
-                } else {
-                    displayName6 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_2"));
-                }
-                plus10Meta.setDisplayName(displayName6);
-                plus10.setItemMeta(plus10Meta);
-            }
-            inventory.setItem(15, plus10);
-
-            // Slot 16
-            ItemStack plus100 = new ItemStack(Material.EMERALD);
-            ItemMeta plus100Meta = plus100.getItemMeta();
-            if (plus100Meta != null) {
-                String displayName7;
-                if (placeholderAPIInstalled) {
-                    displayName7 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_3")));
-                } else {
-                    displayName7 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_3"));
-                }
-                plus100Meta.setDisplayName(displayName7);
-                plus100.setItemMeta(plus100Meta);
-            }
-            inventory.setItem(16, plus100);
-
-            // Slot 17
-            ItemStack plus1000 = new ItemStack(Material.EMERALD);
-            ItemMeta plus1000Meta = plus1000.getItemMeta();
-            if (plus1000Meta != null) {
-                String displayName8;
-                if (placeholderAPIInstalled) {
-                    displayName8 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("plus_4")));
-                } else {
-                    displayName8 = ColorFormat.stringColorise("&#", instance.getConfig().getString("plus_4"));
-                }
-                plus1000Meta.setDisplayName(displayName8);
-                plus1000.setItemMeta(plus1000Meta);
-            }
-            inventory.setItem(17, plus1000);
-
-            // Confirm button on slot 22
-            ItemStack confirm = new ItemStack(Material.LIME_WOOL);
-            ItemMeta confirmMeta = confirm.getItemMeta();
-            if (confirmMeta != null) {
-                String confirmTitle;
-                if (placeholderAPIInstalled) {
-                    confirmTitle = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui3_confirm_name")));
-                } else {
-                    confirmTitle = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui3_confirm_name"));
-                }
-                confirmMeta.setDisplayName(confirmTitle);
-                confirm.setItemMeta(confirmMeta);
-            }
-            inventory.setItem(22, confirm);
-
-            inventory.setItem(26, InfoItem.build(executor));
-
-            executor.openInventory(inventory);
-            PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui3");
-        }
+        executor.openInventory(inventory);
+        PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui3");
     }
 
     public void close(Player executor) {
@@ -278,5 +93,69 @@ public class AmountGUI {
             return instance.getConfig().getString("affordable_no");
         }
         return instance.getConfig().getString("affordable_yes");
+    }
+
+    private String getConfigString(String key, Player player) {
+        String text = instance.getConfig().getString(key, "");
+        if (placeholderAPIInstalled) {
+            text = PlaceholderAPI.setPlaceholders(player, text);
+        }
+        return ColorFormat.stringColorise("&#", text);
+    }
+
+    private void createButtonItem(Material material, String configKey, int slot, Player player, Inventory inventory) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            String displayName = getConfigString(configKey, player);
+            meta.setDisplayName(displayName);
+            item.setItemMeta(meta);
+        }
+        inventory.setItem(slot, item);
+    }
+
+    private ItemStack createInfoItem(Player executor, String mode, int amount) {
+        ItemStack countPaper = new ItemStack(Material.PAPER);
+        ItemMeta paperMeta = countPaper.getItemMeta();
+        if (paperMeta != null) {
+            String countPaperName = getConfigString("gui3_info_item_name", executor)
+                    .replace("%mode%", mode);
+            paperMeta.setDisplayName(countPaperName);
+
+            ArrayList<String> lore = new ArrayList<>();
+            boolean isAllMode = ChatColor.stripColor(mode)
+                    .equalsIgnoreCase(ChatColor.stripColor(instance.getConfig().getString("all_mode_name")));
+
+            if (isAllMode) {
+                for (Object loreObj : instance.getConfig().getList("gui3_info_item_lore_all", new ArrayList<>())) {
+                    String loreLine = loreObj.toString()
+                            .replace("%amount%", String.valueOf(amount))
+                            .replace("%total%", String.valueOf(amount * (Bukkit.getOnlinePlayers().size() - 1)))
+                            .replace("%affordable%", this.canSend(amount * (Bukkit.getOnlinePlayers().size() - 1), executor));
+
+                    if (placeholderAPIInstalled) {
+                        loreLine = PlaceholderAPI.setPlaceholders(executor, loreLine);
+                    }
+                    lore.add(loreLine);
+                }
+            } else {
+                for (Object loreObj : instance.getConfig().getList("gui3_info_item_lore_player", new ArrayList<>())) {
+                    String loreLine = loreObj.toString()
+                            .replace("%amount%", String.valueOf(amount))
+                            .replace("%affordable%", this.canSend(amount, executor));
+
+                    if (placeholderAPIInstalled) {
+                        loreLine = PlaceholderAPI.setPlaceholders(executor, loreLine);
+                    }
+                    lore.add(loreLine);
+                }
+            }
+
+            if (!lore.isEmpty()) {
+                paperMeta.setLore(ColorFormat.listColorise("&#", lore));
+            }
+            countPaper.setItemMeta(paperMeta);
+        }
+        return countPaper;
     }
 }
