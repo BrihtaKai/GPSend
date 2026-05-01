@@ -1,7 +1,7 @@
 package driven.by.data.gpsend.listener;
 
 import driven.by.data.gpsend.GPSend;
-import driven.by.data.gpsend.utils.ColorFormat;
+import driven.by.data.gpsend.utils.MessageUtils;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
@@ -222,6 +222,6 @@ public class GUIInteract implements Listener {
         if (instance.placeholderAPIInstalled) {
             text = PlaceholderAPI.setPlaceholders(player, text);
         }
-        return ChatColor.stripColor(ColorFormat.stringColorise("&#", text));
+        return ChatColor.stripColor(MessageUtils.stringColorise("&#", text));
     }
 }

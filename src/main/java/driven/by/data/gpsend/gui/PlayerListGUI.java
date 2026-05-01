@@ -1,7 +1,7 @@
 package driven.by.data.gpsend.gui;
 
 import driven.by.data.gpsend.GPSend;
-import driven.by.data.gpsend.utils.ColorFormat;
+import driven.by.data.gpsend.utils.MessageUtils;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -28,9 +28,9 @@ public class PlayerListGUI {
         playerPages.put(executor.getUniqueId(), page);
         String title;
         if (placeholderAPIInstalled) {
-            title = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_title")));
+            title = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_title")));
         } else {
-            title = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_title"));
+            title = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_title"));
         }
         Inventory inv = Bukkit.createInventory(null, 54, title);
 
@@ -72,9 +72,9 @@ public class PlayerListGUI {
             if (prevMeta != null) {
                 String prevMetaTtitle;
                 if (placeholderAPIInstalled) {
-                    prevMetaTtitle = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_prev_page")));
+                    prevMetaTtitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_prev_page")));
                 } else {
-                    prevMetaTtitle = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_prev_page"));
+                    prevMetaTtitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_prev_page"));
                 }
                 prevMeta.setDisplayName(prevMetaTtitle);
                 prevPage.setItemMeta(prevMeta);
@@ -87,9 +87,9 @@ public class PlayerListGUI {
             if (nextMeta != null) {
                 String nextMetaTtitle;
                 if (placeholderAPIInstalled) {
-                    nextMetaTtitle = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_next_page")));
+                    nextMetaTtitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_next_page")));
                 } else {
-                    nextMetaTtitle = ColorFormat.stringColorise("&#", instance.getConfig().getString("gui2_next_page"));
+                    nextMetaTtitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_next_page"));
                 }
                 nextMeta.setDisplayName(nextMetaTtitle);
                 nextPage.setItemMeta(nextMeta);

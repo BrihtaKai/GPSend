@@ -4,7 +4,7 @@
   <groupId>driven.by.data</groupId>
   <artifactId>GPSend</artifactId>
   <name>GPSend</name>
-  <version>2.0.6</version>
+  <version>2.1.0</version>
   <build>
     <resources>
       <resource>
@@ -82,7 +82,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.21.8-R0.1-SNAPSHOT</version>
+      <version>26.1.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -110,24 +110,14 @@
     <dependency>
       <groupId>com.github.TechFortress</groupId>
       <artifactId>GriefPrevention</artifactId>
-      <version>17.0.0</version>
+      <version>18.0.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
-      <version>2.11.6</version>
+      <version>2.12.2</version>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>annotations</artifactId>
-          <groupId>org.jetbrains</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>adventure-platform-bukkit</artifactId>
-          <groupId>net.kyori</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
   <properties>

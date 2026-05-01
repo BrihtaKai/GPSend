@@ -1,7 +1,7 @@
 package driven.by.data.gpsend.gui;
 
 import driven.by.data.gpsend.GPSend;
-import driven.by.data.gpsend.utils.ColorFormat;
+import driven.by.data.gpsend.utils.MessageUtils;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Material;
@@ -13,9 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InfoItem {
-
-    private InfoItem() {
-    }
 
     public static ItemStack build(Player player) {
         GPSend instance = GPSend.getInstance();
@@ -60,14 +57,14 @@ public class InfoItem {
         ItemStack sign = new ItemStack(Material.OAK_SIGN);
         ItemMeta meta = sign.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(ColorFormat.stringColorise("&#", "&eSendable Blocks"));
+            meta.setDisplayName(MessageUtils.stringColorise("&#", "&eSendable Blocks"));
             List<String> lore = new ArrayList<>();
-            lore.add(ColorFormat.stringColorise("&#", "&6Max sendable: &f" + maxSendable));
-            lore.add(ColorFormat.stringColorise("&#", "&7Accrued: &f" + accrued));
-            lore.add(ColorFormat.stringColorise("&#", "&7Bonus: &f" + bonus));
-            lore.add(ColorFormat.stringColorise("&#", "&7Total: &f" + total));
-            lore.add(ColorFormat.stringColorise("&#", "&7Remaining: &f" + remaining));
-            lore.add(ColorFormat.stringColorise("&#", "&8Mode: " + modeLabel));
+            lore.add(MessageUtils.stringColorise("&#", "&6Max sendable: &f" + maxSendable));
+            lore.add(MessageUtils.stringColorise("&#", "&7Accrued: &f" + accrued));
+            lore.add(MessageUtils.stringColorise("&#", "&7Bonus: &f" + bonus));
+            lore.add(MessageUtils.stringColorise("&#", "&7Total: &f" + total));
+            lore.add(MessageUtils.stringColorise("&#", "&7Remaining: &f" + remaining));
+            lore.add(MessageUtils.stringColorise("&#", "&8Mode: " + modeLabel));
             meta.setLore(lore);
             sign.setItemMeta(meta);
         }

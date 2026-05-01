@@ -1,9 +1,10 @@
 package driven.by.data.gpsend.gui;
 
 import driven.by.data.gpsend.GPSend;
-import driven.by.data.gpsend.utils.ColorFormat;
+import driven.by.data.gpsend.utils.MessageUtils;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -71,28 +72,28 @@ public class AmountGUI {
 
     public String canSend(int amount, Player executor) {
         int playerAmount;
+        PlayerData data = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId());
+        if (amount <= 0) return instance.getConfig().getString("affordable_yes");
         if (instance.getConfig().getInt("claimblocks_type") == 0) {
-            int accrued = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
-            int bonus = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
+            int accrued = data.getAccruedClaimBlocks();
+            int bonus = data.getBonusClaimBlocks();
             playerAmount = accrued + bonus;
         } else if (instance.getConfig().getInt("claimblocks_type") == 1) {
-            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
+            playerAmount = data.getBonusClaimBlocks();
         } else if (instance.getConfig().getInt("claimblocks_type") == 2) {
-            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getAccruedClaimBlocks();
+            playerAmount = data.getAccruedClaimBlocks();
         } else if (instance.getConfig().getInt("claimblocks_type") == 3) {
-            playerAmount = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getRemainingClaimBlocks();
+            playerAmount = data.getRemainingClaimBlocks();
         } else if (instance.getConfig().getInt("claimblocks_type") == 4) {
-            int remaining = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getRemainingClaimBlocks();
-            int bonus = GriefPrevention.instance.dataStore.getPlayerData(executor.getUniqueId()).getBonusClaimBlocks();
+            int remaining = data.getRemainingClaimBlocks();
+            int bonus = data.getBonusClaimBlocks();
             playerAmount = Math.min(remaining, bonus);
         } else {
             playerAmount = 0;
         }
 
-        if (amount > playerAmount) {
-            return instance.getConfig().getString("affordable_no");
-        }
-        return instance.getConfig().getString("affordable_yes");
+        String key = amount > playerAmount ? "affordable_no" : "affordable_yes";
+        return instance.getConfig().getString(key);
     }
 
     private String getConfigString(String key, Player player) {
@@ -100,17 +101,15 @@ public class AmountGUI {
         if (placeholderAPIInstalled) {
             text = PlaceholderAPI.setPlaceholders(player, text);
         }
-        return ColorFormat.stringColorise("&#", text);
+        return MessageUtils.stringColorise("&#", text);
     }
 
     private void createButtonItem(Material material, String configKey, int slot, Player player, Inventory inventory) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            String displayName = getConfigString(configKey, player);
-            meta.setDisplayName(displayName);
-            item.setItemMeta(meta);
-        }
+        String displayName = getConfigString(configKey, player);
+        meta.setDisplayName(displayName);
+        item.setItemMeta(meta);
         inventory.setItem(slot, item);
     }
 
@@ -131,7 +130,7 @@ public class AmountGUI {
                     String loreLine = loreObj.toString()
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%total%", String.valueOf(amount * (Bukkit.getOnlinePlayers().size() - 1)))
-                            .replace("%affordable%", this.canSend(amount * (Bukkit.getOnlinePlayers().size() - 1), executor));
+                            .replace("%affordable%", canSend(amount * (Bukkit.getOnlinePlayers().size() - 1), executor));
 
                     if (placeholderAPIInstalled) {
                         loreLine = PlaceholderAPI.setPlaceholders(executor, loreLine);
@@ -142,7 +141,7 @@ public class AmountGUI {
                 for (Object loreObj : instance.getConfig().getList("gui3_info_item_lore_player", new ArrayList<>())) {
                     String loreLine = loreObj.toString()
                             .replace("%amount%", String.valueOf(amount))
-                            .replace("%affordable%", this.canSend(amount, executor));
+                            .replace("%affordable%", canSend(amount, executor));
 
                     if (placeholderAPIInstalled) {
                         loreLine = PlaceholderAPI.setPlaceholders(executor, loreLine);
@@ -152,7 +151,7 @@ public class AmountGUI {
             }
 
             if (!lore.isEmpty()) {
-                paperMeta.setLore(ColorFormat.listColorise("&#", lore));
+                paperMeta.setLore(MessageUtils.listColorise("&#", lore));
             }
             countPaper.setItemMeta(paperMeta);
         }

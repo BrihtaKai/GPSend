@@ -1,7 +1,7 @@
 package driven.by.data.gpsend.gui;
 
 import driven.by.data.gpsend.GPSend;
-import driven.by.data.gpsend.utils.ColorFormat;
+import driven.by.data.gpsend.utils.MessageUtils;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -21,18 +21,18 @@ public class ChoosingGUI {
     public void open(Player executor) {
         String title1;
         if (placeholderAPIInstalled) {
-            title1 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_title")));
+            title1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_title")));
         } else {
-            title1 = ColorFormat.stringColorise("&#", gpsend.getConfig().getString("gui1_title"));
+            title1 = MessageUtils.stringColorise("&#", gpsend.getConfig().getString("gui1_title"));
         }
         Inventory inv = Bukkit.createInventory(null, 27, title1);
         ItemStack player = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta player_meta = player.getItemMeta();
         String displayName1;
         if (placeholderAPIInstalled) {
-            displayName1 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_player_name")));
+            displayName1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_player_name")));
         } else {
-            displayName1 = ColorFormat.stringColorise("&#", gpsend.getConfig().getString("gui1_player_name"));
+            displayName1 = MessageUtils.stringColorise("&#", gpsend.getConfig().getString("gui1_player_name"));
         }
         player_meta.setDisplayName(displayName1);
         if (!gpsend.getConfig().getList("gui1_player_lore").isEmpty()) {
@@ -46,7 +46,7 @@ public class ChoosingGUI {
                 }
                 lore.add(loreLine);
             }
-            player_meta.setLore(ColorFormat.listColorise("&#", lore));
+            player_meta.setLore(MessageUtils.listColorise("&#", lore));
         }
         player.setItemMeta(player_meta);
 
@@ -54,9 +54,9 @@ public class ChoosingGUI {
         ItemMeta all_meta = all.getItemMeta();
         String displayName2;
         if (placeholderAPIInstalled) {
-            displayName2 = ColorFormat.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_all_name")));
+            displayName2 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_all_name")));
         } else {
-            displayName2 = ColorFormat.stringColorise("&#", gpsend.getConfig().getString("gui1_all_name"));
+            displayName2 = MessageUtils.stringColorise("&#", gpsend.getConfig().getString("gui1_all_name"));
         }
         all_meta.setDisplayName(displayName2);
         if (!gpsend.getConfig().getList("gui1_all_lore").isEmpty()) {
@@ -70,7 +70,7 @@ public class ChoosingGUI {
                 }
                 lore.add(loreLine);
             }
-            all_meta.setLore(ColorFormat.listColorise("&#", lore));
+            all_meta.setLore(MessageUtils.listColorise("&#", lore));
         }
         all.setItemMeta(all_meta);
 

@@ -1,16 +1,21 @@
 package driven.by.data.gpsend.utils;
 
+import driven.by.data.gpsend.GPSend;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ColorFormat {
+public class MessageUtils {
 
     public static final char COLOR_CHAR = ChatColor.COLOR_CHAR;
+    private static final GPSend instance = GPSend.getInstance();
+
     public static String stringColorise(String startTag, String message) {
         Matcher matcher = null;
         StringBuffer buffer = null;
@@ -35,4 +40,17 @@ public class ColorFormat {
                 .map(message -> stringColorise(startTag, message))
                 .collect(Collectors.toList());
     }
+
+    /**
+     *
+     * @param player
+     * @param arg
+     * @param isKey if true, then arg will be used as config key
+     */
+    public static void sendMessage(Player player, String arg, boolean isKey) {
+        String message = isKey ? GPSend.getInstance().getConfig().getString(arg) : arg;
+        if (instance.placeholderAPIInstalled) message = PlaceholderAPI.setPlaceholders(player, message);
+        player.sendMessage(stringColorise("&#", message));
+    }
+
 }
