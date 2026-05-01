@@ -97,7 +97,10 @@ public class AmountGUI {
     }
 
     private String getConfigString(String key, Player player) {
-        String text = instance.getConfig().getString(key, "");
+        String text = instance.getConfig().getString(key);
+        if (text == null || text.isEmpty()) {
+            throw new IllegalStateException("Config key '" + key + "' is missing or empty! Try restarting.");
+        }
         if (placeholderAPIInstalled) {
             text = PlaceholderAPI.setPlaceholders(player, text);
         }

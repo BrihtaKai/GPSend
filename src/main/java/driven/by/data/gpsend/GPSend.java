@@ -76,11 +76,11 @@ public final class GPSend extends JavaPlugin {
             placeholderAPIInstalled = false;
         }
 
+        mkConfig();
         this.guiManager = new GUIManager(instance);
         this.aliasManager = new AliasManager();
         Bukkit.getPluginManager().registerEvents(new GUIInteract(), this);
 
-        mkConfig();
         initMetrics();
 
         if (getConfig().getBoolean("check_for_updates")) {
@@ -126,6 +126,7 @@ public final class GPSend extends JavaPlugin {
         }
         getConfig().options().copyDefaults();
         saveDefaultConfig();
+        reloadConfig();
     }
 
 
