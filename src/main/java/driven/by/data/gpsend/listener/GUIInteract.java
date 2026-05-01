@@ -1,7 +1,9 @@
 package driven.by.data.gpsend.listener;
 
 import driven.by.data.gpsend.GPSend;
+import driven.by.data.gpsend.utils.ColorFormat;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -131,65 +133,57 @@ public class GUIInteract implements Listener {
         int amount3 = instance.getConfig().getInt("amount_3", 100);
         int amount4 = instance.getConfig().getInt("amount_4", 1000);
         
-        switch (displayName) {
-            case "-amount4": {
-                if (amount >= amount4) {
-                    amount -= amount4;
-                    p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                } else {
-                    p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
-                }
-                break;
-            }
-            case "-amount3": {
-                if (amount >= amount3) {
-                    amount -= amount3;
-                    p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                } else {
-                    p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
-                }
-                break;
-            }
-            case "-amount2": {
-                if (amount >= amount2) {
-                    amount -= amount2;
-                    p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                } else {
-                    p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
-                }
-                break;
-            }
-            case "-amount1": {
-                if (amount >= amount1) {
-                    amount -= amount1;
-                    p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                } else {
-                    p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
-                }
-                break;
-            }
-            case "+amount1": {
-                amount += amount1;
+        String minus1Name = resolveButtonLabel(p, "minus_1", "-1");
+        String minus2Name = resolveButtonLabel(p, "minus_2", "-10");
+        String minus3Name = resolveButtonLabel(p, "minus_3", "-100");
+        String minus4Name = resolveButtonLabel(p, "minus_4", "-1000");
+        String plus1Name = resolveButtonLabel(p, "plus_1", "+1");
+        String plus2Name = resolveButtonLabel(p, "plus_2", "+10");
+        String plus3Name = resolveButtonLabel(p, "plus_3", "+100");
+        String plus4Name = resolveButtonLabel(p, "plus_4", "+1000");
+        
+        if (displayName.equals(minus4Name)) {
+            if (amount >= amount4) {
+                amount -= amount4;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                break;
+            } else {
+                p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
             }
-            case "+amount2": {
-                amount += amount2;
+        } else if (displayName.equals(minus3Name)) {
+            if (amount >= amount3) {
+                amount -= amount3;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                break;
+            } else {
+                p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
             }
-            case "+amount3": {
-                amount += amount3;
+        } else if (displayName.equals(minus2Name)) {
+            if (amount >= amount2) {
+                amount -= amount2;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                break;
+            } else {
+                p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
             }
-            case "+amount4": {
-                amount += amount4;
+        } else if (displayName.equals(minus1Name)) {
+            if (amount >= amount1) {
+                amount -= amount1;
                 p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-                break;
+            } else {
+                p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_FALL, 1.0f, 1.0f);
             }
-            default:
-                return;
+        } else if (displayName.equals(plus1Name)) {
+            amount += amount1;
+            p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+        } else if (displayName.equals(plus2Name)) {
+            amount += amount2;
+            p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+        } else if (displayName.equals(plus3Name)) {
+            amount += amount3;
+            p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+        } else if (displayName.equals(plus4Name)) {
+            amount += amount4;
+            p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+        } else {
+            return;
         }
 
         // Update player's amount in the map
@@ -221,5 +215,13 @@ public class GUIInteract implements Listener {
             instance.getGuiManager().getAmountGUI().getPlayerAmounts().remove(playerUUID);
             instance.getGuiManager().getAmountGUI().getPlayerModes().remove(playerUUID);
         }
+    }
+
+    private String resolveButtonLabel(Player player, String configPath, String fallback) {
+        String text = instance.getConfig().getString(configPath, fallback);
+        if (instance.placeholderAPIInstalled) {
+            text = PlaceholderAPI.setPlaceholders(player, text);
+        }
+        return ChatColor.stripColor(ColorFormat.stringColorise("&#", text));
     }
 }
