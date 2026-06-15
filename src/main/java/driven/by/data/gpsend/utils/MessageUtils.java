@@ -16,25 +16,38 @@ public class MessageUtils {
     public static final char COLOR_CHAR = ChatColor.COLOR_CHAR;
     private static final GPSend instance = GPSend.getInstance();
 
+    /**
+     * Used to colorize strings with HEX and ChatColor.
+     * Version checking(1.13+) dropped in 2.1.2
+     *
+     * @param startTag
+     * @param message
+     * @return
+     */
     public static String stringColorise(String startTag, String message) {
-        Matcher matcher = null;
-        StringBuffer buffer = null;
-        if (Bukkit.getServer().getVersion().contains("1.16") || Bukkit.getServer().getVersion().contains("1.17") || Bukkit.getServer().getVersion().contains("1.18") || Bukkit.getServer().getVersion().contains("1.19") || Bukkit.getServer().getVersion().contains("1.20") || Bukkit.getServer().getVersion().contains("1.21")) {
-            final Pattern hexPattern = Pattern.compile(startTag + "([A-Fa-f0-9]{6})");
-            matcher = hexPattern.matcher(message);
-            buffer = new StringBuffer(message.length() + 4 * 8);
-            while (matcher.find()) {
-                String group = matcher.group(1);
-                matcher.appendReplacement(buffer, COLOR_CHAR + "x"
-                        + COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
-                        + COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
-                        + COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5)
-                );
-            }
+        final Pattern hexPattern = Pattern.compile(startTag + "([A-Fa-f0-9]{6})");
+        Matcher matcher = hexPattern.matcher(message);
+        StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            matcher.appendReplacement(buffer, COLOR_CHAR + "x"
+                    + COLOR_CHAR + group.charAt(0) + COLOR_CHAR + group.charAt(1)
+                    + COLOR_CHAR + group.charAt(2) + COLOR_CHAR + group.charAt(3)
+                    + COLOR_CHAR + group.charAt(4) + COLOR_CHAR + group.charAt(5)
+            );
         }
-        return ChatColor.translateAlternateColorCodes('&', matcher.appendTail(buffer).toString());
+        matcher.appendTail(buffer);
+        return ChatColor.translateAlternateColorCodes('&', buffer.toString());
     }
-    // USED TO COLORIZE STRING LISTS
+
+    /**
+     * Used to colorize string lists
+     * Version checking(1.13+) dropped in 2.1.2
+     *
+     * @param startTag
+     * @param messages
+     * @return new list with colorized strings
+     */
     public static List<String> listColorise(String startTag, List<String> messages) {
         return messages.stream()
                 .map(message -> stringColorise(startTag, message))
@@ -42,9 +55,10 @@ public class MessageUtils {
     }
 
     /**
+     * A helper for colorizing messages and sending them to a player.
      *
      * @param player
-     * @param arg
+     * @param arg if isKey is true, then arg will be used as config key else arg will be used as message
      * @param isKey if true, then arg will be used as config key
      */
     public static void sendMessage(Player player, String arg, boolean isKey) {
