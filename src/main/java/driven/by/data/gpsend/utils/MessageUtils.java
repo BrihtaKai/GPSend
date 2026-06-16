@@ -2,7 +2,6 @@ package driven.by.data.gpsend.utils;
 
 import driven.by.data.gpsend.GPSend;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class MessageUtils {
 
-    public static final char COLOR_CHAR = ChatColor.COLOR_CHAR;
     private static final GPSend instance = GPSend.getInstance();
+    public static final char COLOR_CHAR = ChatColor.COLOR_CHAR;
 
     /**
      * Used to colorize strings with HEX and ChatColor.

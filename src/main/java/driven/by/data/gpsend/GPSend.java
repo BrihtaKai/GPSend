@@ -101,6 +101,10 @@ public final class GPSend extends JavaPlugin {
                 "┃╰┻━┃┃╱╱┃╰━╯┃┃━┫┃┃┃╰╯┃\n" +
                 "╰━━━┻╯╱╱╰━━━┻━━┻╯╰┻━━╯ has been enabled!\n");
 
+        if (getConfig().getInt("claimblocks_type") == 0) {
+            Bukkit.getLogger().warning("You are using claimblock type 0 (TOTAL CLAIMBLOCKS) which is not recommended!");
+        }
+
 
     }
 

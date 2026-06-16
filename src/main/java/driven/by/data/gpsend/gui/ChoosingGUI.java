@@ -15,34 +15,34 @@ import java.util.ArrayList;
 
 public class ChoosingGUI {
 
-    private final GPSend gpsend = GPSend.getInstance();
-    private final boolean placeholderAPIInstalled = gpsend.placeholderAPIInstalled;
+    private final GPSend instance = GPSend.getInstance();
+    private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
 
     public void open(Player executor) {
         String title1;
         if (placeholderAPIInstalled) {
-            title1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_title")));
+            title1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui1_title")));
         } else {
-            title1 = MessageUtils.stringColorise("&#", gpsend.getConfig().getString("gui1_title"));
+            title1 = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui1_title"));
         }
         Inventory inv = Bukkit.createInventory(null, 27, title1);
         ItemStack player = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta player_meta = player.getItemMeta();
         String displayName1;
         if (placeholderAPIInstalled) {
-            displayName1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_player_name")));
+            displayName1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui1_player_name")));
         } else {
-            displayName1 = MessageUtils.stringColorise("&#", gpsend.getConfig().getString("gui1_player_name"));
+            displayName1 = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui1_player_name"));
         }
         player_meta.setDisplayName(displayName1);
-        if (!gpsend.getConfig().getList("gui1_player_lore").isEmpty()) {
+        if (!instance.getConfig().getList("gui1_player_lore").isEmpty()) {
             ArrayList<String> lore = new ArrayList<String>();
-            for (int line = 0; line < gpsend.getConfig().getList("gui1_player_lore").size(); line++) {
+            for (int line = 0; line < instance.getConfig().getList("gui1_player_lore").size(); line++) {
                 String loreLine;
                 if (placeholderAPIInstalled) {
-                    loreLine = PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getList("gui1_player_lore").get(line).toString());
+                    loreLine = PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getList("gui1_player_lore").get(line).toString());
                 } else {
-                    loreLine = gpsend.getConfig().getList("gui1_player_lore").get(line).toString();
+                    loreLine = instance.getConfig().getList("gui1_player_lore").get(line).toString();
                 }
                 lore.add(loreLine);
             }
@@ -54,19 +54,19 @@ public class ChoosingGUI {
         ItemMeta all_meta = all.getItemMeta();
         String displayName2;
         if (placeholderAPIInstalled) {
-            displayName2 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getString("gui1_all_name")));
+            displayName2 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui1_all_name")));
         } else {
-            displayName2 = MessageUtils.stringColorise("&#", gpsend.getConfig().getString("gui1_all_name"));
+            displayName2 = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui1_all_name"));
         }
         all_meta.setDisplayName(displayName2);
-        if (!gpsend.getConfig().getList("gui1_all_lore").isEmpty()) {
+        if (!instance.getConfig().getList("gui1_all_lore").isEmpty()) {
             ArrayList<String> lore = new ArrayList<String>();
-            for (int line = 0; line < gpsend.getConfig().getList("gui1_all_lore").size(); line++) {
+            for (int line = 0; line < instance.getConfig().getList("gui1_all_lore").size(); line++) {
                 String loreLine;
                 if (placeholderAPIInstalled) {
-                    loreLine = PlaceholderAPI.setPlaceholders(executor, gpsend.getConfig().getList("gui1_all_lore").get(line).toString());
+                    loreLine = PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getList("gui1_all_lore").get(line).toString());
                 } else {
-                    loreLine = gpsend.getConfig().getList("gui1_all_lore").get(line).toString();
+                    loreLine = instance.getConfig().getList("gui1_all_lore").get(line).toString();
                 }
                 lore.add(loreLine);
             }

@@ -1,7 +1,6 @@
 package driven.by.data.gpsend.utils;
 
 import driven.by.data.gpsend.GPSend;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Bukkit;
@@ -9,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class SendingHandler {
 
-    private static final GPSend plugin = GPSend.getInstance();
+    private static final GPSend instance = GPSend.getInstance();
 
 
     public static void handleAllSending(Player player, int amount) {
@@ -25,13 +24,13 @@ public class SendingHandler {
             return;
         }
 
-        int mode = plugin.getConfig().getInt("claimblocks_type");
+        int mode = instance.getConfig().getInt("claimblocks_type");
         String type = "*";
         switch (mode) {
             case 0: {
                 type = "total";
                 if (senderTotal < totalAmount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(totalAmount - senderTotal));
 
@@ -43,7 +42,7 @@ public class SendingHandler {
             case 1: {
                 type = "bonus";
                 if (senderBonus < totalAmount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(totalAmount - senderBonus));
 
@@ -55,7 +54,7 @@ public class SendingHandler {
             case 2: {
                 type = "accrued";
                 if (senderAccrued < totalAmount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(totalAmount - senderAccrued));
 
@@ -68,7 +67,7 @@ public class SendingHandler {
                 type = "remaining";
                 int senderRemaining = senderData.getRemainingClaimBlocks();
                 if (senderRemaining < totalAmount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(totalAmount - senderRemaining));
 
@@ -82,7 +81,7 @@ public class SendingHandler {
                 int senderRemaining = senderData.getRemainingClaimBlocks();
                 int maxSendable = Math.min(senderRemaining, senderBonus);
                 if (maxSendable < totalAmount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(totalAmount - maxSendable));
 
@@ -95,12 +94,12 @@ public class SendingHandler {
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (onlinePlayer != player) {
-                handleSending(player, onlinePlayer.getName(), amount, plugin.getConfig().getBoolean("sendall_log"));
+                handleSending(player, onlinePlayer.getName(), amount, instance.getConfig().getBoolean("sendall_log"));
             }
         }
 
-        if (plugin.getConfig().getBoolean("broadcast_on_sendall")){
-            String message = plugin.getConfig().getString("broadcast_message")
+        if (instance.getConfig().getBoolean("broadcast_on_sendall")){
+            String message = instance.getConfig().getString("broadcast_message")
                     .replace("%player%", player.getName())
                     .replace("%type%", type)
                     .replace("%amount%", String.valueOf(amount))
@@ -126,7 +125,7 @@ public class SendingHandler {
             return;
         }
 
-        int mode = plugin.getConfig().getInt("claimblocks_type");
+        int mode = instance.getConfig().getInt("claimblocks_type");
 
         // Fetch PlayerData once for both sender and target
         PlayerData senderData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());
@@ -146,7 +145,7 @@ public class SendingHandler {
                 // TOTAL CLAIM BLOCKS
                 type = "total";
                 if (senderTotal < amount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(amount - senderTotal));
 
@@ -176,7 +175,7 @@ public class SendingHandler {
                 }
 
                 if (all) {
-                    String senderMessage = plugin.getConfig().getString("sender")
+                    String senderMessage = instance.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
                             .replace("%type%", type);
@@ -184,7 +183,14 @@ public class SendingHandler {
                     MessageUtils.sendMessage(sender, senderMessage, false);
                 }
 
-                String targetMessage = plugin.getConfig().getString("receiver")
+                try {
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                String targetMessage = instance.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", type);
@@ -196,7 +202,7 @@ public class SendingHandler {
                 // BONUS CLAIM BLOCKS
                 type = "bonus";
                 if (senderBonus < amount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(amount - senderBonus));
 
@@ -210,8 +216,15 @@ public class SendingHandler {
                 senderData.setBonusClaimBlocks(senderNewBonus);
                 targetData.setBonusClaimBlocks(targetNewBonus);
 
+                try {
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 if (all) {
-                    String senderMessage = plugin.getConfig().getString("sender")
+                    String senderMessage = instance.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
                             .replace("%type%", type);
@@ -219,7 +232,7 @@ public class SendingHandler {
                     MessageUtils.sendMessage(sender, senderMessage, false);
                 }
 
-                String targetMessage = plugin.getConfig().getString("receiver")
+                String targetMessage = instance.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", type);
@@ -231,7 +244,7 @@ public class SendingHandler {
                 // ACCRUED CLAIM BLOCKS
                 type = "accrued";
                 if (senderAccrued < amount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(amount - senderAccrued));
 
@@ -245,8 +258,15 @@ public class SendingHandler {
                 senderData.setAccruedClaimBlocks(senderNewAccrued);
                 targetData.setAccruedClaimBlocks(targetNewAccrued);
 
+                try {
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 if (all) {
-                    String senderMessage = plugin.getConfig().getString("sender")
+                    String senderMessage = instance.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
                             .replace("%type%", type);
@@ -254,7 +274,7 @@ public class SendingHandler {
                     MessageUtils.sendMessage(sender, senderMessage, false);
                 }
 
-                String targetMessage = plugin.getConfig().getString("receiver")
+                String targetMessage = instance.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", type);
@@ -267,7 +287,7 @@ public class SendingHandler {
                 type = "remaining";
                 int senderRemaining = senderData.getRemainingClaimBlocks();
                 if (senderRemaining < amount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(amount - senderRemaining));
 
@@ -285,8 +305,15 @@ public class SendingHandler {
                 int targetNewBonus = targetBonus + amount;
                 targetData.setBonusClaimBlocks(targetNewBonus);
 
+                try {
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 if (all) {
-                    String senderMessage = plugin.getConfig().getString("sender")
+                    String senderMessage = instance.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
                             .replace("%type%", type);
@@ -294,7 +321,7 @@ public class SendingHandler {
                     MessageUtils.sendMessage(sender, senderMessage, false);
                 }
 
-                String targetMessage = plugin.getConfig().getString("receiver")
+                String targetMessage = instance.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", type);
@@ -308,7 +335,7 @@ public class SendingHandler {
                 int senderRemaining = senderData.getRemainingClaimBlocks();
                 int maxSendable = Math.min(senderRemaining, senderBonus);
                 if (maxSendable < amount) {
-                    String message = plugin.getConfig().getString("no_enough_blocks")
+                    String message = instance.getConfig().getString("no_enough_blocks")
                             .replace("%type%", type)
                             .replace("%need%", String.valueOf(amount - maxSendable));
 
@@ -322,8 +349,15 @@ public class SendingHandler {
                 senderData.setBonusClaimBlocks(senderNewBonus);
                 targetData.setBonusClaimBlocks(targetNewBonus);
 
+                try {
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 if (all) {
-                    String senderMessage = plugin.getConfig().getString("sender")
+                    String senderMessage = instance.getConfig().getString("sender")
                             .replace("%amount%", String.valueOf(amount))
                             .replace("%target%", targetPlayer.getName())
                             .replace("%type%", type);
@@ -331,7 +365,7 @@ public class SendingHandler {
                     MessageUtils.sendMessage(sender, senderMessage, false);
                 }
 
-                String targetMessage = plugin.getConfig().getString("receiver")
+                String targetMessage = instance.getConfig().getString("receiver")
                         .replace("%player%", sender.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%type%", type);
