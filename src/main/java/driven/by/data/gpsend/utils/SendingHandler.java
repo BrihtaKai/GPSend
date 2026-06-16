@@ -106,7 +106,7 @@ public class SendingHandler {
                     .replace("%amount%", String.valueOf(amount))
                     .replace("%total%", String.valueOf(totalAmount));
 
-            MessageUtils.sendMessage(player, message, false);
+            Bukkit.broadcastMessage(MessageUtils.stringColorise("&#", message));
         }
     }
 
