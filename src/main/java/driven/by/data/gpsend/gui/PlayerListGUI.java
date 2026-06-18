@@ -70,13 +70,13 @@ public class PlayerListGUI {
             ItemStack prevPage = new ItemStack(Material.ARROW);
             ItemMeta prevMeta = prevPage.getItemMeta();
             if (prevMeta != null) {
-                String prevMetaTtitle;
+                String prevMetaTitle;
                 if (placeholderAPIInstalled) {
-                    prevMetaTtitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_prev_page")));
+                    prevMetaTitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_prev_page")));
                 } else {
-                    prevMetaTtitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_prev_page"));
+                    prevMetaTitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_prev_page"));
                 }
-                prevMeta.setDisplayName(prevMetaTtitle);
+                prevMeta.setDisplayName(prevMetaTitle);
                 prevPage.setItemMeta(prevMeta);
             }
             inv.setItem(48, prevPage);
@@ -85,13 +85,13 @@ public class PlayerListGUI {
             ItemStack nextPage = new ItemStack(Material.ARROW);
             ItemMeta nextMeta = nextPage.getItemMeta();
             if (nextMeta != null) {
-                String nextMetaTtitle;
+                String nextMetaTitle;
                 if (placeholderAPIInstalled) {
-                    nextMetaTtitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_next_page")));
+                    nextMetaTitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_next_page")));
                 } else {
-                    nextMetaTtitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_next_page"));
+                    nextMetaTitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_next_page"));
                 }
-                nextMeta.setDisplayName(nextMetaTtitle);
+                nextMeta.setDisplayName(nextMetaTitle);
                 nextPage.setItemMeta(nextMeta);
             }
             inv.setItem(50, nextPage);

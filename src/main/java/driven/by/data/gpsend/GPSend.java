@@ -70,11 +70,7 @@ public final class GPSend extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            placeholderAPIInstalled = true;
-        } else {
-            placeholderAPIInstalled = false;
-        }
+        placeholderAPIInstalled = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
 
         mkConfig();
         this.guiManager = new GUIManager(instance);

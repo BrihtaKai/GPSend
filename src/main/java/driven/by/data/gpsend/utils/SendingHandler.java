@@ -6,6 +6,9 @@ import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SendingHandler {
 
     private static final GPSend instance = GPSend.getInstance();
@@ -23,6 +26,9 @@ public class SendingHandler {
             MessageUtils.sendMessage(player, "no_players", true);
             return;
         }
+
+        List<Player> targets = new ArrayList<>(Bukkit.getOnlinePlayers());
+        targets.remove(player);
 
         int mode = instance.getConfig().getInt("claimblocks_type");
         String type = "*";
@@ -92,10 +98,12 @@ public class SendingHandler {
             }
         }
 
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer != player) {
-                handleSending(player, onlinePlayer.getName(), amount, instance.getConfig().getBoolean("sendall_log"));
+        for (Player onlinePlayer : targets) {
+            if (!onlinePlayer.isOnline()) {
+                totalAmount -= amount;
+                continue;
             }
+            handleSending(player, onlinePlayer.getName(), amount, instance.getConfig().getBoolean("sendall_log"));
         }
 
         if (instance.getConfig().getBoolean("broadcast_on_sendall")){
@@ -185,7 +193,7 @@ public class SendingHandler {
 
                 try {
                     GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -218,7 +226,7 @@ public class SendingHandler {
 
                 try {
                     GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -260,7 +268,7 @@ public class SendingHandler {
 
                 try {
                     GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -307,7 +315,7 @@ public class SendingHandler {
 
                 try {
                     GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -351,7 +359,7 @@ public class SendingHandler {
 
                 try {
                     GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), targetData);
+                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

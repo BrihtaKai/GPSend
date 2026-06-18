@@ -26,7 +26,7 @@ public class AliasManager {
                 commandMap.register(alias, "GPSend", gpsend);
             });
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            instance.getLogger().severe("Failed to register command aliases: " + e);
         }
     }
 }

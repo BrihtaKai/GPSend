@@ -22,6 +22,10 @@ public class GpsendCommand implements CommandExecutor {
             if (!(sender instanceof Player) && !(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
                 return false;
             }
+            if (!sender.hasPermission("gpsend.admin")) {
+                return false;
+            }
+
             instance.reloadConfig();
             instance.getAliasManager().gpsendAliasRegister();
             sender.sendMessage(MessageUtils.stringColorise("&#", "Config reloaded!"));

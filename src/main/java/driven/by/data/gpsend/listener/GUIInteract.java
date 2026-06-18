@@ -79,11 +79,11 @@ public class GUIInteract implements Listener {
         if (clickedItem.getType() == Material.ARROW) {
             String itemName = ChatColor.stripColor(clickedItem.getItemMeta().getDisplayName());
             int currentPage = playerPages.getOrDefault(p.getUniqueId(), 0);
-            if ("Previous Page".equals(itemName)) {
+            if (event.getSlot() == 48) { // prev
                 reopeningGUI.add(p.getUniqueId()); // Add player to reopening set
                 instance.getGuiManager().getPlayerListGUI().close(p);
                 instance.getGuiManager().getPlayerListGUI().open(p, currentPage - 1);
-            } else if ("Next Page".equals(itemName)) {
+            } else if (event.getSlot() == 50) { // next
                 reopeningGUI.add(p.getUniqueId()); // Add player to reopening set
                 instance.getGuiManager().getPlayerListGUI().close(p);
                 instance.getGuiManager().getPlayerListGUI().open(p, currentPage + 1);
