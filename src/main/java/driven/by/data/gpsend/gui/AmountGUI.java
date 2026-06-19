@@ -35,7 +35,7 @@ public class AmountGUI {
         playerModes.putIfAbsent(executor.getUniqueId(), mode);
         int amount = playerAmounts.get(executor.getUniqueId());
         
-        String title = getConfigString("gui3_title", executor);
+        String title = MessageUtils.getProcessedMessage(executor, "gui3_title", true, null);
         Inventory inventory = Bukkit.createInventory(null, 27, title);
 
         // Create info item in slot 13
@@ -96,21 +96,10 @@ public class AmountGUI {
         return instance.getConfig().getString(key);
     }
 
-    private String getConfigString(String key, Player player) {
-        String text = instance.getConfig().getString(key);
-        if (text == null || text.isEmpty()) {
-            throw new IllegalStateException("Config key '" + key + "' is missing or empty! Try restarting.");
-        }
-        if (placeholderAPIInstalled) {
-            text = PlaceholderAPI.setPlaceholders(player, text);
-        }
-        return MessageUtils.stringColorise("&#", text);
-    }
-
     private void createButtonItem(Material material, String configKey, int slot, Player player, Inventory inventory) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
-        String displayName = getConfigString(configKey, player);
+        String displayName = MessageUtils.getProcessedMessage(player, configKey, true, null);
         meta.setDisplayName(displayName);
         item.setItemMeta(meta);
         inventory.setItem(slot, item);
@@ -120,8 +109,7 @@ public class AmountGUI {
         ItemStack countPaper = new ItemStack(Material.PAPER);
         ItemMeta paperMeta = countPaper.getItemMeta();
         if (paperMeta != null) {
-            String countPaperName = getConfigString("gui3_info_item_name", executor)
-                    .replace("%mode%", mode);
+            String countPaperName = MessageUtils.getProcessedMessage(executor, "gui3_info_item_name", true, Map.of("%mode%", mode));
             paperMeta.setDisplayName(countPaperName);
 
             ArrayList<String> lore = new ArrayList<>();
@@ -130,25 +118,18 @@ public class AmountGUI {
 
             if (isAllMode) {
                 for (Object loreObj : instance.getConfig().getList("gui3_info_item_lore_all", new ArrayList<>())) {
-                    String loreLine = loreObj.toString()
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%total%", String.valueOf(amount * (Bukkit.getOnlinePlayers().size() - 1)))
-                            .replace("%affordable%", canSend(amount * (Bukkit.getOnlinePlayers().size() - 1), executor));
-
-                    if (placeholderAPIInstalled) {
-                        loreLine = PlaceholderAPI.setPlaceholders(executor, loreLine);
-                    }
+                    String loreLine = MessageUtils.getProcessedMessage(executor, "gui3_info_item_lore_all", true, Map.of(
+                            "%amount%", String.valueOf(amount),
+                            "%total%", String.valueOf(amount * (Bukkit.getOnlinePlayers().size() - 1)),
+                            "%affordable%", canSend(amount * (Bukkit.getOnlinePlayers().size() - 1), executor))
+                    );
                     lore.add(loreLine);
                 }
             } else {
                 for (Object loreObj : instance.getConfig().getList("gui3_info_item_lore_player", new ArrayList<>())) {
-                    String loreLine = loreObj.toString()
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%affordable%", canSend(amount, executor));
-
-                    if (placeholderAPIInstalled) {
-                        loreLine = PlaceholderAPI.setPlaceholders(executor, loreLine);
-                    }
+                    String loreLine = MessageUtils.getProcessedMessage(executor, "gui3_info_item_lore_player", true, Map.of(
+                            "%amount%", String.valueOf(amount),
+                            "%affordable%", canSend(amount, executor)));
                     lore.add(loreLine);
                 }
             }

@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,17 +54,38 @@ public class MessageUtils {
                 .collect(Collectors.toList());
     }
 
+
     /**
-     * A helper for colorizing messages and sending them to a player.
+     * Sends a message to a player with placeholders and replacements.
      *
      * @param player
-     * @param arg if isKey is true, then arg will be used as config key else arg will be used as message
+     * @param arg
      * @param isKey if true, then arg will be used as config key
+     * @param replacers map of placeholders and replacements
      */
-    public static void sendMessage(Player player, String arg, boolean isKey) {
+    public static void sendMessage(Player player, String arg, boolean isKey, Map<String, String> replacers) {
+        player.sendMessage(getProcessedMessage(player, arg, isKey, replacers));
+    }
+
+    /**
+     * Returns a processed message with placeholders and replacements.
+     *
+     * @param player
+     * @param arg
+     * @param isKey if true, then arg will be used as config key
+     * @param replacers map of placeholders and replacements
+     * @return
+     */
+    public static String getProcessedMessage(Player player, String arg, boolean isKey, Map<String, String> replacers) {
         String message = isKey ? GPSend.getInstance().getConfig().getString(arg) : arg;
+        if (message == null) return " <!" + arg + "!> ";
         if (instance.placeholderAPIInstalled) message = PlaceholderAPI.setPlaceholders(player, message);
-        player.sendMessage(stringColorise("&#", message));
+        if (replacers != null) {
+            for (Map.Entry<String, String> entry : replacers.entrySet()) {
+                message = message.replace(entry.getKey(), entry.getValue());
+            }
+        }
+        return stringColorise("&#", message);
     }
 
 }

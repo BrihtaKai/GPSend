@@ -26,12 +26,7 @@ public class PlayerListGUI {
 
     public void open(Player executor, int page) {
         playerPages.put(executor.getUniqueId(), page);
-        String title;
-        if (placeholderAPIInstalled) {
-            title = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_title")));
-        } else {
-            title = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_title"));
-        }
+        String title = MessageUtils.getProcessedMessage(executor, "gui2_title", true, null);
         Inventory inv = Bukkit.createInventory(null, 54, title);
 
         ItemStack line = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
@@ -70,12 +65,7 @@ public class PlayerListGUI {
             ItemStack prevPage = new ItemStack(Material.ARROW);
             ItemMeta prevMeta = prevPage.getItemMeta();
             if (prevMeta != null) {
-                String prevMetaTitle;
-                if (placeholderAPIInstalled) {
-                    prevMetaTitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_prev_page")));
-                } else {
-                    prevMetaTitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_prev_page"));
-                }
+                String prevMetaTitle = MessageUtils.getProcessedMessage(executor, "gui2_prev_page", true, null);
                 prevMeta.setDisplayName(prevMetaTitle);
                 prevPage.setItemMeta(prevMeta);
             }
@@ -85,12 +75,7 @@ public class PlayerListGUI {
             ItemStack nextPage = new ItemStack(Material.ARROW);
             ItemMeta nextMeta = nextPage.getItemMeta();
             if (nextMeta != null) {
-                String nextMetaTitle;
-                if (placeholderAPIInstalled) {
-                    nextMetaTitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_next_page")));
-                } else {
-                    nextMetaTitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_next_page"));
-                }
+                String nextMetaTitle = MessageUtils.getProcessedMessage(executor, "gui2_next_page", true, null);
                 nextMeta.setDisplayName(nextMetaTitle);
                 nextPage.setItemMeta(nextMeta);
             }

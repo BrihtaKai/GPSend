@@ -3,7 +3,6 @@ package driven.by.data.gpsend.command;
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.MessageUtils;
 import driven.by.data.gpsend.utils.SendingHandler;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,13 +12,13 @@ import org.bukkit.entity.Player;
 public class GpsendCommand implements CommandExecutor {
 
     private final GPSend instance = GPSend.getInstance();
-    private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         // Allow reload from console
         if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-            if (!(sender instanceof Player) && !(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
+            if (!(sender instanceof Player)) {
+                instance.reloadConfig();
                 return false;
             }
             if (!sender.hasPermission("gpsend.admin")) {
@@ -28,7 +27,7 @@ public class GpsendCommand implements CommandExecutor {
 
             instance.reloadConfig();
             instance.getAliasManager().gpsendAliasRegister();
-            sender.sendMessage(MessageUtils.stringColorise("&#", "Config reloaded!"));
+            sender.sendMessage("Config reloaded!");
             if (instance.getConfig().getInt("claimblocks_type") == 0) {
                 Bukkit.getLogger().warning("You are using claimblock type 0 (TOTAL CLAIMBLOCKS) which is not recommended!");
             }
@@ -42,11 +41,7 @@ public class GpsendCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (!player.hasPermission("gpsend.send") && !player.isOp()) {
-            if (placeholderAPIInstalled) {
-                player.sendMessage(MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("no_permission"))));
-            } else {
-                player.sendMessage(MessageUtils.stringColorise("&#", instance.getConfig().getString("no_permission")));
-            }
+            MessageUtils.sendMessage(player, "no_permission", true, null);
             return false;
         }
 
@@ -73,20 +68,12 @@ public class GpsendCommand implements CommandExecutor {
                             int amount = Integer.parseInt(args[2]);
                             if (amount <= 0) {
                                 // Negative amount is not allowed
-                                if (placeholderAPIInstalled) {
-                                    player.sendMessage(MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("invalid_amount"))));
-                                } else {
-                                    player.sendMessage(MessageUtils.stringColorise("&#", instance.getConfig().getString("invalid_amount")));
-                                }
+                                MessageUtils.sendMessage(player, "invalid_amount", true, null);
                                 return true;
                             }
                             SendingHandler.handleSending(player, playerName, amount, true);
                         } catch (NumberFormatException e) {
-                            if (placeholderAPIInstalled) {
-                                player.sendMessage(MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("invalid_amount"))));
-                            } else {
-                                player.sendMessage(MessageUtils.stringColorise("&#", instance.getConfig().getString("invalid_amount")));
-                            }
+                            MessageUtils.sendMessage(player, "invalid_amount", true, null);
                         }
                         return true;
                     }
@@ -94,11 +81,7 @@ public class GpsendCommand implements CommandExecutor {
                 }
                 case "all": {
                     if (!player.hasPermission("gpsend.sendall") && !player.isOp()) {
-                        if (placeholderAPIInstalled) {
-                            player.sendMessage(MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("no_permission"))));
-                        } else {
-                            player.sendMessage(MessageUtils.stringColorise("&#", instance.getConfig().getString("no_permission")));
-                        }
+                        MessageUtils.sendMessage(player, "no_permission", true, null);
                         return false;
                     }
 
@@ -111,31 +94,19 @@ public class GpsendCommand implements CommandExecutor {
                             int amount = Integer.parseInt(args[1]);
                             if (amount <= 0) {
                                 // Negative amount is not allowed
-                                if (placeholderAPIInstalled) {
-                                    player.sendMessage(MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("invalid_amount"))));
-                                } else {
-                                    player.sendMessage(MessageUtils.stringColorise("&#", instance.getConfig().getString("invalid_amount")));
-                                }
+                                MessageUtils.sendMessage(player, "invalid_amount", true, null);
                                 return true;
                             }
                             SendingHandler.handleAllSending(player, amount);
                         } catch (NumberFormatException e) {
-                            if (placeholderAPIInstalled) {
-                                player.sendMessage(MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("invalid_amount"))));
-                            } else {
-                                player.sendMessage(MessageUtils.stringColorise("&#", instance.getConfig().getString("invalid_amount")));
-                            }
+                            MessageUtils.sendMessage(player, "invalid_amount", true, null);
                         }
                         return true;
                     }
                     break;
                 }
                 default: {
-                    if (placeholderAPIInstalled) {
-                        player.sendMessage(MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(player, instance.getConfig().getString("invalid_type"))));
-                    } else {
-                        player.sendMessage(MessageUtils.stringColorise("&#", instance.getConfig().getString("invalid_type")));
-                    }
+                    MessageUtils.sendMessage(player, "invalid_type", true, null);
                     break;
                 }
             }

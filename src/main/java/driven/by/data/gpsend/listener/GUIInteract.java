@@ -3,7 +3,6 @@ package driven.by.data.gpsend.listener;
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.MessageUtils;
 import driven.by.data.gpsend.utils.PlayerStatusManager;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -132,15 +131,15 @@ public class GUIInteract implements Listener {
         int amount2 = instance.getConfig().getInt("amount_2", 10);
         int amount3 = instance.getConfig().getInt("amount_3", 100);
         int amount4 = instance.getConfig().getInt("amount_4", 1000);
-        
-        String minus1Name = resolveButtonLabel(p, "minus_1", "-1");
-        String minus2Name = resolveButtonLabel(p, "minus_2", "-10");
-        String minus3Name = resolveButtonLabel(p, "minus_3", "-100");
-        String minus4Name = resolveButtonLabel(p, "minus_4", "-1000");
-        String plus1Name = resolveButtonLabel(p, "plus_1", "+1");
-        String plus2Name = resolveButtonLabel(p, "plus_2", "+10");
-        String plus3Name = resolveButtonLabel(p, "plus_3", "+100");
-        String plus4Name = resolveButtonLabel(p, "plus_4", "+1000");
+
+        String minus1Name = MessageUtils.getProcessedMessage(p, "minus_1", true, null);
+        String minus2Name = MessageUtils.getProcessedMessage(p, "minus_2", true, null);
+        String minus3Name = MessageUtils.getProcessedMessage(p, "minus_3", true, null);
+        String minus4Name = MessageUtils.getProcessedMessage(p, "minus_4", true, null);
+        String plus1Name = MessageUtils.getProcessedMessage(p, "plus_1", true, null);
+        String plus2Name = MessageUtils.getProcessedMessage(p, "plus_2", true, null);
+        String plus3Name = MessageUtils.getProcessedMessage(p, "plus_3", true, null);
+        String plus4Name = MessageUtils.getProcessedMessage(p, "plus_4", true, null);
         
         if (displayName.equals(minus4Name)) {
             if (amount >= amount4) {
@@ -215,13 +214,5 @@ public class GUIInteract implements Listener {
             instance.getGuiManager().getAmountGUI().getPlayerAmounts().remove(playerUUID);
             instance.getGuiManager().getAmountGUI().getPlayerModes().remove(playerUUID);
         }
-    }
-
-    private String resolveButtonLabel(Player player, String configPath, String fallback) {
-        String text = instance.getConfig().getString(configPath, fallback);
-        if (instance.placeholderAPIInstalled) {
-            text = PlaceholderAPI.setPlaceholders(player, text);
-        }
-        return ChatColor.stripColor(MessageUtils.stringColorise("&#", text));
     }
 }

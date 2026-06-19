@@ -7,379 +7,217 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SendingHandler {
 
     private static final GPSend instance = GPSend.getInstance();
 
+    public static void handleSending(Player sender, String targetName, int amount, boolean showSenderMessage) {
+        Player target = Bukkit.getPlayerExact(targetName);
 
-    public static void handleAllSending(Player player, int amount) {
-        PlayerData senderData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        int senderBonus = senderData.getBonusClaimBlocks();
-        int senderAccrued = senderData.getAccruedClaimBlocks();
-        int senderTotal = senderBonus + senderAccrued;
-
-        int onlinePlayersCount = Bukkit.getOnlinePlayers().size() - 1;
-        int totalAmount = amount * onlinePlayersCount;
-        if (onlinePlayersCount == 0) {
-            MessageUtils.sendMessage(player, "no_players", true);
-            return;
-        }
-
-        List<Player> targets = new ArrayList<>(Bukkit.getOnlinePlayers());
-        targets.remove(player);
-
-        int mode = instance.getConfig().getInt("claimblocks_type");
-        String type = "*";
-        switch (mode) {
-            case 0: {
-                type = "total";
-                if (senderTotal < totalAmount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - senderTotal));
-
-                    MessageUtils.sendMessage(player, message, false);
-                    return;
-                }
-                break;
-            }
-            case 1: {
-                type = "bonus";
-                if (senderBonus < totalAmount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - senderBonus));
-
-                    MessageUtils.sendMessage(player, message, false);
-                    return;
-                }
-                break;
-            }
-            case 2: {
-                type = "accrued";
-                if (senderAccrued < totalAmount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - senderAccrued));
-
-                    MessageUtils.sendMessage(player, message, false);
-                    return;
-                }
-                break;
-            }
-            case 3: {
-                type = "remaining";
-                int senderRemaining = senderData.getRemainingClaimBlocks();
-                if (senderRemaining < totalAmount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - senderRemaining));
-
-                    MessageUtils.sendMessage(player, message, false);
-                    return;
-                }
-                break;
-            }
-            case 4: {
-                type = "remaining-bonus";
-                int senderRemaining = senderData.getRemainingClaimBlocks();
-                int maxSendable = Math.min(senderRemaining, senderBonus);
-                if (maxSendable < totalAmount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(totalAmount - maxSendable));
-
-                    MessageUtils.sendMessage(player, message, false);
-                    return;
-                }
-                break;
-            }
-        }
-
-        for (Player onlinePlayer : targets) {
-            if (!onlinePlayer.isOnline()) {
-                totalAmount -= amount;
-                continue;
-            }
-            handleSending(player, onlinePlayer.getName(), amount, instance.getConfig().getBoolean("sendall_log"));
-        }
-
-        if (instance.getConfig().getBoolean("broadcast_on_sendall")){
-            String message = instance.getConfig().getString("broadcast_message")
-                    .replace("%player%", player.getName())
-                    .replace("%type%", type)
-                    .replace("%amount%", String.valueOf(amount))
-                    .replace("%total%", String.valueOf(totalAmount));
-
-            Bukkit.broadcastMessage(MessageUtils.stringColorise("&#", message));
-        }
-    }
-
-    public static void handleSending(Player sender, String targetName, int amount, boolean all) {
-        Player targetPlayer = Bukkit.getPlayerExact(targetName);
-
-        // Check if the target player is online
-        if (targetPlayer == null) {
-            MessageUtils.sendMessage(sender, "player_not_found", true);
+        if (target == null) {
+            MessageUtils.sendMessage(sender, "player_not_found", true, null);
             return;
         }
 
         if (sender.getName().equalsIgnoreCase(targetName)) {
-            if (all) {
-                MessageUtils.sendMessage(sender, "cannot_send_to_self", true);
+            if (showSenderMessage) {
+                MessageUtils.sendMessage(sender, "cannot_send_to_self", true, null);
             }
             return;
         }
 
         int mode = instance.getConfig().getInt("claimblocks_type");
+        String type = getTypeName(mode);
 
-        // Fetch PlayerData once for both sender and target
         PlayerData senderData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());
-        PlayerData targetData = GriefPrevention.instance.dataStore.getPlayerData(targetPlayer.getUniqueId());
+        PlayerData targetData = GriefPrevention.instance.dataStore.getPlayerData(target.getUniqueId());
 
-        int senderBonus = senderData.getBonusClaimBlocks();
-        int senderAccrued = senderData.getAccruedClaimBlocks();
-        int senderTotal = senderBonus + senderAccrued;
+        if (!hasEnough(senderData, amount, mode)) {
+            int shortfall = amount - getBalance(senderData, mode);
+            Map<String, String> replacers = new HashMap<>();
+            replacers.put("%type%", type);
+            replacers.put("%need%", String.valueOf(shortfall));
+            MessageUtils.sendMessage(sender, "no_enough_blocks", true, replacers);
+            return;
+        }
 
-        int targetBonus = targetData.getBonusClaimBlocks();
-        int targetAccrued = targetData.getAccruedClaimBlocks();
-        int targetTotal = targetBonus + targetAccrued;
+        deductCB(senderData, targetData, amount, mode);
+        saveData(sender, senderData, target, targetData);
 
-        String type = "*";
+        if (showSenderMessage) {
+            Map<String, String> replacers = new HashMap<>();
+            replacers.put("%amount%", String.valueOf(amount));
+            replacers.put("%target%", target.getName());
+            replacers.put("%type%", type);
+            MessageUtils.sendMessage(sender, "sender", true, replacers);
+        }
+
+        Map<String, String> targetReplacers = new HashMap<>();
+        targetReplacers.put("%player%", sender.getName());
+        targetReplacers.put("%amount%", String.valueOf(amount));
+        targetReplacers.put("%type%", type);
+        MessageUtils.sendMessage(target, "receiver", true, targetReplacers);
+    }
+
+    public static void handleAllSending(Player sender, int amount) {
+        List<Player> targets = new ArrayList<>(Bukkit.getOnlinePlayers());
+        targets.remove(sender);
+
+        if (targets.isEmpty()) {
+            MessageUtils.sendMessage(sender, "no_players", true, null);
+            return;
+        }
+
+        int mode = instance.getConfig().getInt("claimblocks_type");
+        int totalAmount = amount * targets.size();
+        String type = getTypeName(mode);
+
+        PlayerData senderData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());
+
+        if (!hasEnough(senderData, totalAmount, mode)) {
+            int shortfall = totalAmount - getBalance(senderData, mode);
+            Map<String, String> replacers = new HashMap<>();
+            replacers.put("%type%", type);
+            replacers.put("%need%", String.valueOf(shortfall));
+            MessageUtils.sendMessage(sender, "no_enough_blocks", true, replacers);
+            return;
+        }
+
+        int actualTotal = 0;
+        for (Player target : targets) {
+            if (!target.isOnline()) continue;
+            handleSending(sender, target.getName(), amount, false);
+            actualTotal += amount;
+        }
+
+        if (instance.getConfig().getBoolean("broadcast_on_sendall")) {
+            Map<String, String> replacers = new HashMap<>();
+            replacers.put("%player%", sender.getName());
+            replacers.put("%type%", type);
+            replacers.put("%amount%", String.valueOf(amount));
+            replacers.put("%total%", String.valueOf(actualTotal));
+            String message = MessageUtils.getProcessedMessage(sender, "broadcast_message", true, replacers);
+            Bukkit.broadcastMessage(message);
+        }
+    }
+
+
+    /**
+     * Deducts {@code amount} claim blocks from {@code senderData} and credits
+     * them to {@code targetData} according to the active mode.
+     * Both PlayerData objects are mutated in place + caller is responsible for saving
+     *
+     * @param senderData GP PlayerData of the sender   (mutated)
+     * @param targetData GP PlayerData of the receiver (mutated)
+     * @param amount     number of blocks to transfer  (must be > 0)
+     * @param mode       claimblocks_type value (0–4)
+     */
+    private static void deductCB(PlayerData senderData, PlayerData targetData, int amount, int mode) {
         switch (mode) {
+
             case 0: {
-                // TOTAL CLAIM BLOCKS
-                type = "total";
-                if (senderTotal < amount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - senderTotal));
+                // 0 is stupid mode. doesn't make sense. shouldnt be used
 
-                    MessageUtils.sendMessage(sender, message, false);
-                    return;
-                }
+                // total: drain accrued first bonus covers rest
+                int sBonus    = senderData.getBonusClaimBlocks();
+                int sAccrued  = senderData.getAccruedClaimBlocks();
+                int sNewTotal = (sBonus + sAccrued) - amount;
 
-                int senderNewTotal = senderTotal - amount;
-                int targetNewTotal = targetTotal + amount;
-
-                // Update Sender Claim Blocks
-                if (senderNewTotal > senderBonus) {
-                    senderData.setAccruedClaimBlocks(senderNewTotal - senderBonus);
-                    senderData.setBonusClaimBlocks(senderBonus);
+                if (sNewTotal >= sBonus) {
+                    senderData.setAccruedClaimBlocks(sNewTotal - sBonus);
+                    senderData.setBonusClaimBlocks(sBonus);
                 } else {
                     senderData.setAccruedClaimBlocks(0);
-                    senderData.setBonusClaimBlocks(senderNewTotal);
+                    senderData.setBonusClaimBlocks(sNewTotal);
                 }
 
-                // Update Target Claim Blocks
-                if (targetNewTotal > targetBonus) {
-                    targetData.setAccruedClaimBlocks(targetNewTotal - targetBonus);
-                    targetData.setBonusClaimBlocks(targetBonus);
+                // credit target: top up accrued, bonus unchanged
+                int tBonus    = targetData.getBonusClaimBlocks();
+                int tAccrued  = targetData.getAccruedClaimBlocks();
+                int tNewTotal = (tBonus + tAccrued) + amount;
+
+                if (tNewTotal >= tBonus) {
+                    targetData.setAccruedClaimBlocks(tNewTotal - tBonus);
+                    targetData.setBonusClaimBlocks(tBonus);
                 } else {
                     targetData.setAccruedClaimBlocks(0);
-                    targetData.setBonusClaimBlocks(targetNewTotal);
+                    targetData.setBonusClaimBlocks(tNewTotal);
                 }
-
-                if (all) {
-                    String senderMessage = instance.getConfig().getString("sender")
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type);
-
-                    MessageUtils.sendMessage(sender, senderMessage, false);
-                }
-
-                try {
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                String targetMessage = instance.getConfig().getString("receiver")
-                        .replace("%player%", sender.getName())
-                        .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type);
-
-                MessageUtils.sendMessage(targetPlayer, targetMessage, false);
-                return;
+                break;
             }
-            case 1: {
-                // BONUS CLAIM BLOCKS
-                type = "bonus";
-                if (senderBonus < amount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - senderBonus));
 
-                    MessageUtils.sendMessage(sender, message, false);
-                    return;
-                }
-
-                int senderNewBonus = senderBonus - amount;
-                int targetNewBonus = targetBonus + amount;
-
-                senderData.setBonusClaimBlocks(senderNewBonus);
-                targetData.setBonusClaimBlocks(targetNewBonus);
-
-                try {
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (all) {
-                    String senderMessage = instance.getConfig().getString("sender")
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type);
-
-                    MessageUtils.sendMessage(sender, senderMessage, false);
-                }
-
-                String targetMessage = instance.getConfig().getString("receiver")
-                        .replace("%player%", sender.getName())
-                        .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type);
-
-                MessageUtils.sendMessage(targetPlayer, targetMessage, false);
-                return;
+            case 1:
+            case 4: {
+                // bonus only (mode 4 uses a stricter balance check but same deduction)
+                senderData.setBonusClaimBlocks(senderData.getBonusClaimBlocks() - amount);
+                targetData.setBonusClaimBlocks(targetData.getBonusClaimBlocks() + amount);
+                break;
             }
+
             case 2: {
-                // ACCRUED CLAIM BLOCKS
-                type = "accrued";
-                if (senderAccrued < amount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - senderAccrued));
-
-                    MessageUtils.sendMessage(sender, message, false);
-                    return;
-                }
-
-                int senderNewAccrued = senderAccrued - amount;
-                int targetNewAccrued = targetAccrued + amount;
-
-                senderData.setAccruedClaimBlocks(senderNewAccrued);
-                targetData.setAccruedClaimBlocks(targetNewAccrued);
-
-                try {
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (all) {
-                    String senderMessage = instance.getConfig().getString("sender")
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type);
-
-                    MessageUtils.sendMessage(sender, senderMessage, false);
-                }
-
-                String targetMessage = instance.getConfig().getString("receiver")
-                        .replace("%player%", sender.getName())
-                        .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type);
-
-                MessageUtils.sendMessage(targetPlayer, targetMessage, false);
-                return;
+                // accrued only
+                senderData.setAccruedClaimBlocks(senderData.getAccruedClaimBlocks() - amount);
+                targetData.setAccruedClaimBlocks(targetData.getAccruedClaimBlocks() + amount);
+                break;
             }
+
             case 3: {
-                // REMAINING CLAIM BLOCKS (available blocks not used in claims)
-                type = "remaining";
-                int senderRemaining = senderData.getRemainingClaimBlocks();
-                if (senderRemaining < amount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - senderRemaining));
-
-                    MessageUtils.sendMessage(sender, message, false);
-                    return;
-                }
-
-                // For remaining blocks mode, deplete bonus first, then accrued
-                int bonusToUse = Math.min(senderBonus, amount);
+                // deplete bonus first, then accrued
+                int bonus        = senderData.getBonusClaimBlocks();
+                int bonusToUse   = Math.min(bonus, amount);
                 int accruedToUse = amount - bonusToUse;
 
-                senderData.setBonusClaimBlocks(senderBonus - bonusToUse);
-                senderData.setAccruedClaimBlocks(senderAccrued - accruedToUse);
-
-                int targetNewBonus = targetBonus + amount;
-                targetData.setBonusClaimBlocks(targetNewBonus);
-
-                try {
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (all) {
-                    String senderMessage = instance.getConfig().getString("sender")
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type);
-
-                    MessageUtils.sendMessage(sender, senderMessage, false);
-                }
-
-                String targetMessage = instance.getConfig().getString("receiver")
-                        .replace("%player%", sender.getName())
-                        .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type);
-
-                MessageUtils.sendMessage(targetPlayer, targetMessage, false);
-                return;
+                senderData.setBonusClaimBlocks(bonus - bonusToUse);
+                senderData.setAccruedClaimBlocks(senderData.getAccruedClaimBlocks() - accruedToUse);
+                targetData.setBonusClaimBlocks(targetData.getBonusClaimBlocks() + amount);
+                break;
             }
-            case 4: {
-                // REMAINING + BONUS CAP (min of remaining and bonus)
-                type = "remaining-bonus";
-                int senderRemaining = senderData.getRemainingClaimBlocks();
-                int maxSendable = Math.min(senderRemaining, senderBonus);
-                if (maxSendable < amount) {
-                    String message = instance.getConfig().getString("no_enough_blocks")
-                            .replace("%type%", type)
-                            .replace("%need%", String.valueOf(amount - maxSendable));
+        }
+    }
 
-                    MessageUtils.sendMessage(sender, message, false);
-                    return;
-                }
 
-                int senderNewBonus = senderBonus - amount;
-                int targetNewBonus = targetBonus + amount;
+    /** Returns true if {@code data} has at least {@code amount} blocks for the given mode. */
+    private static boolean hasEnough(PlayerData data, int amount, int mode) {
+        return getBalance(data, mode) >= amount;
+    }
 
-                senderData.setBonusClaimBlocks(senderNewBonus);
-                targetData.setBonusClaimBlocks(targetNewBonus);
+    /** Returns the spendable balance for the given mode. */
+    private static int getBalance(PlayerData data, int mode) {
+        switch (mode) {
+            case 0:  return data.getBonusClaimBlocks() + data.getAccruedClaimBlocks();
+            case 1:  return data.getBonusClaimBlocks();
+            case 2:  return data.getAccruedClaimBlocks();
+            case 3:  return data.getRemainingClaimBlocks();
+            case 4:  return Math.min(data.getRemainingClaimBlocks(), data.getBonusClaimBlocks());
+            default: return 0;
+        }
+    }
 
-                try {
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
-                    GriefPrevention.instance.dataStore.savePlayerDataSync(targetPlayer.getUniqueId(), targetData);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    /** Returns the display name for a mode, used in messages. */
+    private static String getTypeName(int mode) {
+        switch (mode) {
+            case 0:  return "total";
+            case 1:  return "bonus";
+            case 2:  return "accrued";
+            case 3:  return "remaining";
+            case 4:  return "remaining-bonus";
+            default: return "*";
+        }
+    }
 
-                if (all) {
-                    String senderMessage = instance.getConfig().getString("sender")
-                            .replace("%amount%", String.valueOf(amount))
-                            .replace("%target%", targetPlayer.getName())
-                            .replace("%type%", type);
-
-                    MessageUtils.sendMessage(sender, senderMessage, false);
-                }
-
-                String targetMessage = instance.getConfig().getString("receiver")
-                        .replace("%player%", sender.getName())
-                        .replace("%amount%", String.valueOf(amount))
-                        .replace("%type%", type);
-
-                MessageUtils.sendMessage(targetPlayer, targetMessage, false);
-            }
+    /** Saves both PlayerData objects and logs any failure clearly. */
+    private static void saveData(Player sender, PlayerData senderData, Player target, PlayerData targetData) {
+        try {
+            GriefPrevention.instance.dataStore.savePlayerDataSync(sender.getUniqueId(), senderData);
+            GriefPrevention.instance.dataStore.savePlayerDataSync(target.getUniqueId(), targetData);
+        } catch (Exception e) {
+            instance.getLogger().severe("Failed to save claim block data for "
+                    + sender.getName() + " -> " + target.getName() + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

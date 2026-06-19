@@ -19,21 +19,11 @@ public class ChoosingGUI {
     private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
 
     public void open(Player executor) {
-        String title1;
-        if (placeholderAPIInstalled) {
-            title1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui1_title")));
-        } else {
-            title1 = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui1_title"));
-        }
+        String title1 = MessageUtils.getProcessedMessage(executor, "gui1_title", true, null);
         Inventory inv = Bukkit.createInventory(null, 27, title1);
         ItemStack player = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta player_meta = player.getItemMeta();
-        String displayName1;
-        if (placeholderAPIInstalled) {
-            displayName1 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui1_player_name")));
-        } else {
-            displayName1 = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui1_player_name"));
-        }
+        String displayName1 = MessageUtils.getProcessedMessage(executor, "gui1_player_name", true, null);
         player_meta.setDisplayName(displayName1);
         if (!instance.getConfig().getList("gui1_player_lore").isEmpty()) {
             ArrayList<String> lore = new ArrayList<String>();
@@ -52,12 +42,7 @@ public class ChoosingGUI {
 
         ItemStack all = new ItemStack(Material.EMERALD_BLOCK);
         ItemMeta all_meta = all.getItemMeta();
-        String displayName2;
-        if (placeholderAPIInstalled) {
-            displayName2 = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui1_all_name")));
-        } else {
-            displayName2 = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui1_all_name"));
-        }
+        String displayName2 = MessageUtils.getProcessedMessage(executor, "gui1_all_name", true, null);
         all_meta.setDisplayName(displayName2);
         if (!instance.getConfig().getList("gui1_all_lore").isEmpty()) {
             ArrayList<String> lore = new ArrayList<String>();
