@@ -2,79 +2,109 @@ package driven.by.data.gpsend.gui;
 
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.MessageUtils;
-import driven.by.data.gpsend.utils.PlayerStatusManager;
-import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ChoosingGUI {
+public class ChoosingGUI extends BaseGUI {
 
     private final GPSend instance = GPSend.getInstance();
-    private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
 
-    public void open(Player executor) {
-        String title1 = MessageUtils.getProcessedMessage(executor, "gui1_title", true, null);
-        Inventory inv = Bukkit.createInventory(null, 27, title1);
-        ItemStack player = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta player_meta = player.getItemMeta();
-        String displayName1 = MessageUtils.getProcessedMessage(executor, "gui1_player_name", true, null);
-        player_meta.setDisplayName(displayName1);
-        if (!instance.getConfig().getList("gui1_player_lore").isEmpty()) {
-            ArrayList<String> lore = new ArrayList<String>();
-            for (int line = 0; line < instance.getConfig().getList("gui1_player_lore").size(); line++) {
-                String loreLine;
-                if (placeholderAPIInstalled) {
-                    loreLine = PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getList("gui1_player_lore").get(line).toString());
-                } else {
-                    loreLine = instance.getConfig().getList("gui1_player_lore").get(line).toString();
-                }
-                lore.add(loreLine);
-            }
-            player_meta.setLore(MessageUtils.listColorise("&#", lore));
-        }
-        player.setItemMeta(player_meta);
+    public ChoosingGUI(Player viewer) {
+        super(
+                viewer,
+                27,
+                MessageUtils.getProcessedMessage(
+                        viewer,
+                        "gui.choosing_gui.title",
+                        true,
+                        null
+                )
+        );
+    }
 
-        ItemStack all = new ItemStack(Material.EMERALD_BLOCK);
-        ItemMeta all_meta = all.getItemMeta();
-        String displayName2 = MessageUtils.getProcessedMessage(executor, "gui1_all_name", true, null);
-        all_meta.setDisplayName(displayName2);
-        if (!instance.getConfig().getList("gui1_all_lore").isEmpty()) {
-            ArrayList<String> lore = new ArrayList<String>();
-            for (int line = 0; line < instance.getConfig().getList("gui1_all_lore").size(); line++) {
-                String loreLine;
-                if (placeholderAPIInstalled) {
-                    loreLine = PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getList("gui1_all_lore").get(line).toString());
-                } else {
-                    loreLine = instance.getConfig().getList("gui1_all_lore").get(line).toString();
-                }
-                lore.add(loreLine);
-            }
-            all_meta.setLore(MessageUtils.listColorise("&#", lore));
-        }
-        all.setItemMeta(all_meta);
+    @Override
+    protected void build() {
+        boolean hasAllPerm = viewer.hasPermission("gpsend.sendall") || viewer.isOp();
 
-        if (executor.hasPermission("gpsend.sendall") || executor.isOp()) {
-            inv.setItem(12, player);
-            inv.setItem(14, all);
+        int playerSlot = instance.getConfig().getInt("gui.choosing_gui.items.player.slot");
+        int allSlot = instance.getConfig().getInt("gui.choosing_gui.items.all.slot");
+
+        if (hasAllPerm) {
+            setItem(
+                    playerSlot,
+                    createItem("gui.choosing_gui.items.player"),
+                    event -> new PlayerListGUI(viewer).open()
+            );
+
+            setItem(
+                    allSlot,
+                    createItem("gui.choosing_gui.items.all"),
+                    event -> new AmountGUI(
+                            viewer,
+                            instance.getConfig().getString("gui.amount_gui.items.info.all_mode_name")
+                    ).open()
+            );
         } else {
-            inv.setItem(13, player);
+            // Keep the original behavior of centering the player button
+            setItem(
+                    13,
+                    createItem("gui.choosing_gui.items.player"),
+                    event -> new PlayerListGUI(viewer).open()
+            );
         }
 
-        inv.setItem(26, InfoItem.build(executor));
-
-        executor.openInventory(inv);
-        PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui1");
+        if (instance.getConfig().getBoolean("gui.info_item.choosing_gui.display")) {
+            setItem(
+                    instance.getConfig().getInt("gui.info_item.choosing_gui.slot"),
+                    InfoItem.build(viewer)
+            );
+        }
     }
 
-    public void close(Player executor) {
-        executor.closeInventory();
-        PlayerStatusManager.removePlayerStatus(executor.getUniqueId(), "gui-status");
-    }
+    private ItemStack createItem(String path) {
+        Material material = Material.valueOf(
+                instance.getConfig().getString(path + ".material", "STONE")
+        );
 
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName(
+                MessageUtils.getProcessedMessage(
+                        viewer,
+                        path + ".display_name",
+                        true,
+                        null
+                )
+        );
+
+        int modelData = instance.getConfig().getInt(path + ".model_data");
+        if (modelData != 0) {
+            meta.setCustomModelData(modelData);
+        }
+
+        List<String> lore = new ArrayList<>();
+        for (String line : instance.getConfig().getStringList(path + ".lore")) {
+            lore.add(
+                    MessageUtils.getProcessedMessage(
+                            viewer,
+                            line,
+                            false,
+                            null
+                    )
+            );
+        }
+
+        if (!lore.isEmpty()) {
+            meta.setLore(MessageUtils.listColorise("&#", lore));
+        }
+
+        item.setItemMeta(meta);
+        return item;
+    }
 }

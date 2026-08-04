@@ -22,7 +22,26 @@ public class AliasManager {
             bukkitCommandMap.setAccessible(true);
             CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 
-            instance.getConfig().getStringList("command_alias").forEach(alias -> {
+            instance.getConfig().getStringList("command_alias_gpsend").forEach(alias -> {
+                commandMap.register(alias, "GPSend", gpsend);
+            });
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            instance.getLogger().severe("Failed to register command aliases: " + e);
+        }
+    }
+
+    public void gprequestAliasRegister() {
+        PluginCommand gpsend = instance.getCommand("gprequest");
+
+        if (instance.getConfig().getBoolean("separate_commands")) return;
+
+        try {
+            final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+
+            bukkitCommandMap.setAccessible(true);
+            CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+
+            instance.getConfig().getStringList("command_alias_gprequest").forEach(alias -> {
                 commandMap.register(alias, "GPSend", gpsend);
             });
         } catch (NoSuchFieldException | IllegalAccessException e) {

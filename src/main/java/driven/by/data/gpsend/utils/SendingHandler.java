@@ -200,11 +200,11 @@ public class SendingHandler {
     /** Returns the display name for a mode, used in messages. */
     private static String getTypeName(int mode) {
         switch (mode) {
-            case 0:  return "total";
-            case 1:  return "bonus";
-            case 2:  return "accrued";
-            case 3:  return "remaining";
-            case 4:  return "remaining-bonus";
+            case 0:  return instance.getConfig().getString("type_names.total");
+            case 1:  return instance.getConfig().getString("type_names.bonus");
+            case 2:  return instance.getConfig().getString("type_names.accrued");
+            case 3:  return instance.getConfig().getString("type_names.remaining");
+            case 4:  return instance.getConfig().getString("type_names.remaining_bonus_cap");
             default: return "*";
         }
     }

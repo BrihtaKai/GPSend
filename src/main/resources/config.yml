@@ -16,93 +16,153 @@
 # Plugin Version: ${project.version}            # Requirements: GriefPrevention #
 # ################################################################ #
 
-# FUNCTIONALITY SETTINGS:
-# broadcast_on_sendall: If true, sends a broadcast message when "/gpsend all" is used
-# sendall_log: If true, when player uses "/gpsend all" for every player, it logs(to sender)
-# claimblocks_type: Choose from which set of blocks to remove from; 0 = total, 1 = bonus, 2 = accrued, 3 = remaining, 4 = remaining-bonus-cap ; Check the end of this file for more info about claim blocks types
-# check_for_updates: If true, checks for updates every 24 hours
-# separate_commands: If true, doesn't register command aliases (only /gpsend will work)
-
+# FUNCTIONALITY SETTINGS
 broadcast_on_sendall: true
 sendall_log: false
+
+# 0 = total
+# 1 = bonus
+# 2 = accrued
+# 3 = remaining
+# 4 = remaining-bonus-cap
 claimblocks_type: 4
+type_names:
+  total: "total"
+  bonus: "bonus"
+  accrued: "accrued"
+  remaining: "remaining"
+  remaining_bonus_cap: "remaining-bonus"
+
 check_for_updates: true
 separate_commands: false
-command_alias:
+request_expire_in: 2 #min
+
+command_alias_gpsend:
   - "sendclaimblocks"
 
-# GUI SETTINGS:
-# gui1_title: Title of the type choose gui (all/player)
-# gui1_player_name: Name of the player button
-# gui1_player_lore: Lore of the player button
-# gui1_all_name: Name of the all button
-# gui1_all_lore: Lore of the all button
-# gui2_title: Title of the player list gui
-# gui2_prev_page: Name of the previous page button (in player select gui)
-# gui2_next_page: Name of the next page button (in player select gui)
-# gui3_title: Title of the amount selector gui
-# gui3_confirm_name: Name of the confirm button (in amount selector gui)
-# gui3_info_item_name: Name of the info item (in amount selector gui) %mode% - will be replaced with targetname or all_mode_name
-# all_mode_name: Name of the all mode button (in amount selector gui) <- this can replace %mode in gui3_info_item_name
-# gui3_info_item_lore_player: Lore of the info item (in amount selector gui) <- this lore is displayed when sending claimblocks to specific player
-# gui3_info_item_lore_all: Lore of the info item (in amount selector gui) <- this lore is displayed when sending claimblocks to all players
-# affordable_no: Name of the not affordable button (in amount selector gui) <- this can replace %affordable%
-# affordable_yes: Name of the affordable button (in amount selector gui) <- this can replace %affordable%
-# amount_1: Quantity for the smallest increment/decrement button
-# amount_2: Quantity for the second increment/decrement button
-# amount_3: Quantity for the third increment/decrement button
-# amount_4: Quantity for the largest increment/decrement button
-# plus_1/minus_1: Display names for buttons using amount_1
-# plus_10/minus_10: Display names for buttons using amount_2
-# plus_100/minus_100: Display names for buttons using amount_3
-# plus_1000/minus_1000: Display names for buttons using amount_4
+command_alias_gprequest:
+  - "rqclaimblocks"
 
-gui1_title: "&6&lGPSend"
-gui1_player_name: "&6Player"
-gui1_player_lore:
-  - "&7Send claim blocks to"
-  - "&7specific player"
-gui1_all_name: "&6All"
-gui1_all_lore:
-  - "&7Send claim blocks to"
-  - "&7everyone online"
+gui:
+  choosing_gui:
+    title: "    &0&lCHOOSE SENDING MODE"
+    items:
+      player:
+        slot: 11
+        material: SKULL_BANNER_PATTERN
+        model_data: 0
+        display_name: "&b&lSPECIFIC PLAYER"
+        lore:
+          - "&7Send claim blocks to"
+          - "&7specific player"
+          - " "
+          - "&6Click to proceed."
+      all:
+        slot: 15
+        material: FLOWER_BANNER_PATTERN
+        model_data: 0
+        display_name: "&b&lSEND TO EVERYONE"
+        lore:
+          - "&7Send claim blocks to"
+          - "&7everyone online"
+          - " "
+          - "&6Click to proceed."
 
-gui2_title: "&6&lGPSend - Player List"
-gui2_prev_page: "&bPrevious Page"
-gui2_next_page: "&bNext Page"
-gui3_title: "&6&lGPSend - Amount Selector"
-gui3_confirm_name: "&aConfirm"
-gui3_info_item_name: "&f(&e%mode%&f)"
-all_mode_name: "ALL"
-gui3_info_item_lore_player: # %amount% - will be replaced with amount ;; %affordable% - will be replaced with affordable_no or affordable_yes
-  - "&fAmount: &e%amount%"
-  - "&f(%affordable%&f)"
-gui3_info_item_lore_all: # %total% - will be replaced with amount * (number of players - 1)
-  - "&fAmount: &e%amount%"
-  - "&fTotal: &e%total%"
-  - "&f(%affordable%&f)"
-affordable_no: "&c✖"
-affordable_yes: "&a✔"
-amount_1: 1
-amount_2: 10
-amount_3: 100
-amount_4: 1000
-plus_1: "&2+1"
-plus_2: "&2+10"
-plus_3: "&2+100"
-plus_4: "&2+1000"
-minus_1: "&c-1"
-minus_2: "&c-10"
-minus_3: "&c-100"
-minus_4: "&c-1000"
+  player_list_gui:
+    title: "        &0&lSELECT RECEIVER"
+    items:
+      player_head:
+        display_name: "&fChoose &b&l%player% &fas receiver?"
+      prev_page:
+        slot: 48
+        material: ARROW
+        model_data: 0
+        display_name: "&bPREVIOUS PAGE"
+      page_info:
+        slot: 49
+        material: PAPER
+        model_data: 0
+        display_name: "&b%page%&f/&b%max%"
+      next_page:
+        slot: 50
+        material: ARROW
+        model_data: 0
+        display_name: "&bNEXT PAGE"
 
-# ERROR SECTION:
-# invalid_amount: Happens when player tries to use negative number
-# no_enough_blocks: Happens when player tries to send more blocks than he has
-# player_not_found: Happens when player tries to send blocks to non-existing player
-# invalid_type: Happens when player tries to choose invalid type (/gpsend <type>)
-# no_permission: Happens when player tries to use command without permission
+  amount_gui:
+    title: "  &0&lCHOOSE AMOUNT TO SEND"
+    amounts:
+      plus1: 1
+      plus2: 10
+      plus3: 100
+      plus4: 1000
+      minus1: 1
+      minus2: 10
+      minus3: 100
+      minus4: 1000
+    items:
+      minus:
+        slots: [12, 11, 10, 9]
+        material: REDSTONE
+        model_data: 0
+        display_name: "&c&l- %amount%"
+      info:
+        slot: 13
+        material: PAPER
+        model_data: 0
+        display_name: "&f&lSending to &b%mode%&f:"
+        all_mode_name: "ALL"
+        lore_target:
+          - " "
+          - "&fAmount: &b%amount% %affordable%"
+        lore_all:
+          - " "
+          - "&fAmount: &b%amount% %affordable_single%"
+          - "&fTotal: &b%total% %affordable%"
+        affordable_no: "&c✖"
+        affordable_yes: "&a✔"
+      plus:
+        slots: [14, 15, 16, 17]
+        material: EMERALD
+        model_data: 0
+        display_name: "&a&l+ %amount%"
+      confirm:
+        slot: 22
+        material: LIME_WOOL
+        model_data: 0
+        display_name: "&a&l✔ CONFIRM AND SEND ✔"
 
+  info_item:
+    material: OAK_SIGN
+    model_data: 0
+    display_name: "&b&lYOUR STATS:"
+    lore:
+      - " "
+      - "&fYou can send up to:"
+      - "&b&l%max_sendable% &b%mode% blocks&f."
+      - " "
+      - "&fYour blocks of all types:"
+      - "&7Accrued: &b%accrued%"
+      - "&7Bonus: &b%bonus%"
+      - "&7Total: &b%total%"
+      - "&7Remaining: &b%remaining%"
+    modes:
+      total: "Total only"
+      bonus: "Bonus only"
+      accrued: "Accrued only"
+      remaining: "Remaining only"
+      remaining_bonus: "remaining (capped to Bonus)"
+    choosing_gui:
+      display: true
+      slot: 13
+    player_list_gui:
+      display: false
+      slot: 53
+    amount_gui:
+      display: true
+      slot: 4
+
+# ERROR MESSAGES
 invalid_amount: "&cInvalid amount. Please enter a valid number."
 no_enough_blocks: "&cYou don't have enough %type% claim blocks to send! You need %need% more."
 player_not_found: "&cTarget player not found or not online."
@@ -110,29 +170,33 @@ invalid_type: "&cInvalid argument for command."
 no_permission: "&cYou don't have permission to use this command."
 cannot_send_to_self: "&cYou cannot send claimblocks to yourself."
 no_players: "&cNo online players found. (ignoring yourself)"
+invalid_usage: "&cUsage: /gprequest new <player> <amount> &7or &c/gprequest accept/deny"
+request_not_found: "&cYou don't have any pending requests!"
+request_already_involved: "&cYou or that player already has an active request!"
 
-# MESSAGE SECTION:
-# sender: This message is seen by sender when claimblocks were sent
-# receiver: This message is seen by receiver when claimblocks were sent
-# broadcast_message: This message is seen by everyone when "/gpsend all" is used
-
+# CHAT MESSAGES
 sender: "&aYou have just sent %amount% %type% claim blocks to %target%."
 receiver: "&a%player% just sent you %amount% %type% claim blocks."
 broadcast_message: "&6%player% sent %amount% %type% claim blocks to everyone online, which is %total% in total."
 
-# ACCRUED claim blocks - These are claim blocks that a player earns over time, typically for free, as they play on the server.
-#  *Players accumulate accrued claim blocks at a rate set by the server admin (e.g., 100 blocks/hour of playtime).
-#  *These blocks are not bought or given as a bonus—they are earned naturally through gameplay.
-#  *They have a cap (maximum accrued claim blocks) to prevent players from accumulating infinite blocks.
-# BONUS claim blocks - These are additional claim blocks that an admin can give to a player manually or through commands.
-#  *Bonus blocks are often given as rewards, purchased through in-game economies, or granted for promotions or events.
-#  *They are added on top of accrued claim blocks and do not expire unless explicitly removed.
-# TOTAL claim blocks - The sum of a player’s accrued claim blocks and bonus claim blocks.
-#  *This is the total number of claim blocks a player can use to claim or expand land.
-#  *Total claim blocks = Accrued claim blocks + Bonus claim blocks
-# REMAINING claim blocks - The number of claim blocks available for new claims (not currently used in existing claims).
-#  *This is calculated as: Total claim blocks - Blocks used in existing claims
-#  *This prevents players from sending blocks that are already being used, avoiding negative balances.
-#  *Remaining claim blocks = Total claim blocks - Used claim blocks
-# REMAINING-BONUS-CAP claim blocks - Capped by the smaller of remaining and bonus.
-#  *Max sendable = min(remaining, bonus)
+request_sender_new: "&aSuccessfully requesting %amount% claimblocks from %target%."
+request_target_new: "&a&l%owner% is REQUESTING %amount% claimblocks from you. Use '/gprequest accept' to send. This expires in 5min."
+request_sender_expire: "&cYour claimblock request of %amount% to %target% has expired."
+request_target_expire: "&cRequest from %owner% for %amount% claimblocks has expired."
+request_sender_accept: "&a%target% accepted your request for %amount% claimblocks."
+request_target_accept: "&aYou accepted %owner%'s request for %amount% claimblocks."
+request_sender_deny: "&c%target% denied your request for %amount% claimblocks."
+request_target_deny: "&cYou denied %owner%'s request for %amount% claimblocks."
+
+# CLAIM BLOCK TYPES
+#
+# ACCRUED
+#   Claim blocks earned naturally through play.
+# BONUS
+#   Claim blocks granted by admins or rewards.
+# TOTAL
+#   Accrued + Bonus.
+# REMAINING
+#   Total - Used claim blocks.
+# REMAINING-BONUS-CAP
+#   min(Remaining, Bonus)
