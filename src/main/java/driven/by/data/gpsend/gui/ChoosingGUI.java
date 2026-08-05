@@ -38,7 +38,7 @@ public class ChoosingGUI extends BaseGUI {
             setItem(
                     playerSlot,
                     createItem("gui.choosing_gui.items.player"),
-                    event -> new PlayerListGUI(viewer).open()
+                    event -> new PlayerListGUI(viewer, this::openSendAmountGUI).open()
             );
 
             setItem(
@@ -46,7 +46,8 @@ public class ChoosingGUI extends BaseGUI {
                     createItem("gui.choosing_gui.items.all"),
                     event -> new AmountGUI(
                             viewer,
-                            instance.getConfig().getString("gui.amount_gui.items.info.all_mode_name")
+                            instance.getConfig().getString("gui.amount_gui.items.info.all_mode_name"),
+                            (v, amt) -> v.performCommand("gpsend all " + amt)
                     ).open()
             );
         } else {
@@ -54,7 +55,7 @@ public class ChoosingGUI extends BaseGUI {
             setItem(
                     13,
                     createItem("gui.choosing_gui.items.player"),
-                    event -> new PlayerListGUI(viewer).open()
+                    event -> new PlayerListGUI(viewer, this::openSendAmountGUI).open()
             );
         }
 
@@ -64,6 +65,14 @@ public class ChoosingGUI extends BaseGUI {
                     InfoItem.build(viewer)
             );
         }
+    }
+
+    private void openSendAmountGUI(Player viewer, Player target) {
+        new AmountGUI(
+                viewer,
+                target.getName(),
+                (v, amt) -> v.performCommand("gpsend player " + target.getName() + " " + amt)
+        ).open();
     }
 
     private ItemStack createItem(String path) {

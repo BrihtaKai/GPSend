@@ -18,11 +18,16 @@ import java.util.Map;
 
 public class AmountGUI extends BaseGUI {
 
+    public interface ConfirmAction {
+        void execute(Player viewer, int amount);
+    }
+
     private final GPSend instance = GPSend.getInstance();
     private final String mode;
     private int amount;
+    private final ConfirmAction onConfirm;
 
-    public AmountGUI(Player viewer, String mode) {
+    public AmountGUI(Player viewer, String mode, ConfirmAction onConfirm) {
         super(
                 viewer,
                 27,
@@ -35,6 +40,7 @@ public class AmountGUI extends BaseGUI {
         );
         this.mode = mode;
         this.amount = 0;
+        this.onConfirm = onConfirm;
     }
 
     @Override
@@ -155,19 +161,7 @@ public class AmountGUI extends BaseGUI {
                 1.0f
         );
 
-        boolean allMode = ChatColor.stripColor(mode).equalsIgnoreCase(
-                ChatColor.stripColor(
-                        instance.getConfig().getString(
-                                "gui.amount_gui.items.info.all_mode_name"
-                        )
-                )
-        );
-
-        if (allMode) {
-            viewer.performCommand("gpsend all " + amount);
-        } else {
-            viewer.performCommand("gpsend player " + mode + " " + amount);
-        }
+        onConfirm.execute(viewer, amount);
     }
 
     private void createButton(

@@ -47,7 +47,7 @@ public class GpsendCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (!player.hasPermission("gpsend.send") && !player.isOp()) {
-            MessageUtils.sendMessage(player, "no_permission", true, null);
+            MessageUtils.sendMessage(player, "errors.no_permission", true, null);
             return false;
         }
 
@@ -61,12 +61,18 @@ public class GpsendCommand implements CommandExecutor {
         switch (type) {
             case "player": {
                 if (args.length == 1) {
-                    new PlayerListGUI(player).open();
+                    new PlayerListGUI(player, (v, target) ->
+                            new AmountGUI(v, target.getName(),
+                                    (vv, amt) -> vv.performCommand("gpsend player " + target.getName() + " " + amt)
+                            ).open()
+                    ).open();
                     return true;
                 }
                 if (args.length == 2) {
                     String playerName = args[1];
-                    new AmountGUI(player, playerName).open();
+                    new AmountGUI(player, playerName,
+                            (v, amt) -> v.performCommand("gpsend player " + playerName + " " + amt)
+                    ).open();
                     return true;
                 }
                 try {
@@ -75,7 +81,7 @@ public class GpsendCommand implements CommandExecutor {
                     if (amount <= 0) {
                         MessageUtils.sendMessage(
                                 player,
-                                "invalid_amount",
+                                "errors.invalid_amount",
                                 true,
                                 null
                         );
@@ -90,7 +96,7 @@ public class GpsendCommand implements CommandExecutor {
                 } catch (NumberFormatException e) {
                     MessageUtils.sendMessage(
                             player,
-                            "invalid_amount",
+                            "errors.invalid_amount",
                             true,
                             null
                     );
@@ -101,7 +107,7 @@ public class GpsendCommand implements CommandExecutor {
                 if (!player.hasPermission("gpsend.sendall") && !player.isOp()) {
                     MessageUtils.sendMessage(
                             player,
-                            "no_permission",
+                            "errors.no_permission",
                             true,
                             null
                     );
@@ -110,7 +116,8 @@ public class GpsendCommand implements CommandExecutor {
                 if (args.length == 1) {
                     new AmountGUI(
                             player,
-                            instance.getConfig().getString("all_mode_name")
+                            instance.getConfig().getString("all_mode_name"),
+                            (v, amt) -> v.performCommand("gpsend all " + amt)
                     ).open();
                     return true;
                 }
@@ -119,7 +126,7 @@ public class GpsendCommand implements CommandExecutor {
                     if (amount <= 0) {
                         MessageUtils.sendMessage(
                                 player,
-                                "invalid_amount",
+                                "errors.invalid_amount",
                                 true,
                                 null
                         );
@@ -132,7 +139,7 @@ public class GpsendCommand implements CommandExecutor {
                 } catch (NumberFormatException e) {
                     MessageUtils.sendMessage(
                             player,
-                            "invalid_amount",
+                            "errors.invalid_amount",
                             true,
                             null
                     );
@@ -142,7 +149,7 @@ public class GpsendCommand implements CommandExecutor {
             default: {
                 MessageUtils.sendMessage(
                         player,
-                        "invalid_type",
+                        "send.invalid_target_type",
                         true,
                         null
                 );

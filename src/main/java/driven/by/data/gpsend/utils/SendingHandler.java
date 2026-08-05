@@ -19,13 +19,13 @@ public class SendingHandler {
         Player target = Bukkit.getPlayerExact(targetName);
 
         if (target == null) {
-            MessageUtils.sendMessage(sender, "player_not_found", true, null);
+            MessageUtils.sendMessage(sender, "errors.player_not_found", true, null);
             return;
         }
 
         if (sender.getName().equalsIgnoreCase(targetName)) {
             if (showSenderMessage) {
-                MessageUtils.sendMessage(sender, "cannot_send_to_self", true, null);
+                MessageUtils.sendMessage(sender, "transfer.cannot_send_to_self", true, null);
             }
             return;
         }
@@ -41,7 +41,7 @@ public class SendingHandler {
             Map<String, String> replacers = new HashMap<>();
             replacers.put("%type%", type);
             replacers.put("%need%", String.valueOf(shortfall));
-            MessageUtils.sendMessage(sender, "no_enough_blocks", true, replacers);
+            MessageUtils.sendMessage(sender, "transfer.not_enough_blocks", true, replacers);
             return;
         }
 
@@ -53,14 +53,14 @@ public class SendingHandler {
             replacers.put("%amount%", String.valueOf(amount));
             replacers.put("%target%", target.getName());
             replacers.put("%type%", type);
-            MessageUtils.sendMessage(sender, "sender", true, replacers);
+            MessageUtils.sendMessage(sender, "transfer.sent_confirmation", true, replacers);
         }
 
         Map<String, String> targetReplacers = new HashMap<>();
         targetReplacers.put("%player%", sender.getName());
         targetReplacers.put("%amount%", String.valueOf(amount));
         targetReplacers.put("%type%", type);
-        MessageUtils.sendMessage(target, "receiver", true, targetReplacers);
+        MessageUtils.sendMessage(target, "transfer.received_notice", true, targetReplacers);
     }
 
     public static void handleAllSending(Player sender, int amount) {
@@ -68,7 +68,7 @@ public class SendingHandler {
         targets.remove(sender);
 
         if (targets.isEmpty()) {
-            MessageUtils.sendMessage(sender, "no_players", true, null);
+            MessageUtils.sendMessage(sender, "errors.no_players_online", true, null);
             return;
         }
 
@@ -83,7 +83,7 @@ public class SendingHandler {
             Map<String, String> replacers = new HashMap<>();
             replacers.put("%type%", type);
             replacers.put("%need%", String.valueOf(shortfall));
-            MessageUtils.sendMessage(sender, "no_enough_blocks", true, replacers);
+            MessageUtils.sendMessage(sender, "transfer.not_enough_blocks", true, replacers);
             return;
         }
 
@@ -100,7 +100,7 @@ public class SendingHandler {
             replacers.put("%type%", type);
             replacers.put("%amount%", String.valueOf(amount));
             replacers.put("%total%", String.valueOf(actualTotal));
-            String message = MessageUtils.getProcessedMessage(sender, "broadcast_message", true, replacers);
+            String message = MessageUtils.getProcessedMessage(sender, "send.broadcast_all", true, replacers);
             Bukkit.broadcastMessage(message);
         }
     }

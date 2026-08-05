@@ -4,7 +4,7 @@
   <groupId>driven.by.data</groupId>
   <artifactId>GPSend</artifactId>
   <name>GPSend</name>
-  <version>2.1.4</version>
+  <version>3.0.0</version>
   <build>
     <resources>
       <resource>

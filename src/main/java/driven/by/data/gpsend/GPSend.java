@@ -33,9 +33,12 @@ import driven.by.data.gpsend.request.RequestManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -122,10 +125,35 @@ public final class GPSend extends JavaPlugin {
         new Metrics(this, pluginId);
     }
 
+    // MIGRATION LOGIC IS TO BE REMOVED IN ANY VERSION AFTER 3.0.0
     public void mkConfig() {
         if (!getDataFolder().exists()) {
             getDataFolder().mkdirs();
         }
+
+        File configFile = new File(getDataFolder(), "config.yml");
+        int CURRENT_CV = 3;
+
+        if (configFile.exists()) {
+            FileConfiguration existing = YamlConfiguration.loadConfiguration(configFile);
+
+            if (existing.getInt("cv", -1) != CURRENT_CV) {
+                File backup = new File(getDataFolder(), "v2.yml");
+
+                if (configFile.renameTo(backup)) {
+                    getLogger().warning(
+                            "Outdated config.yml detected (missing/old 'cv' key) — "
+                                    + "backed up as v2.yml and generating a fresh default config."
+                    );
+                } else {
+                    getLogger().warning(
+                            "Outdated config.yml detected but failed to back it up to v2.yml! "
+                                    + "Check file permissions in the plugin data folder."
+                    );
+                }
+            }
+        }
+
         getConfig().options().copyDefaults();
         saveDefaultConfig();
         reloadConfig();

@@ -16,9 +16,14 @@ import java.util.Map;
 
 public class PlayerListGUI extends PaginatedGUI<Player> {
 
-    private final GPSend instance = GPSend.getInstance();
+    public interface Selector {
+        void onSelect(Player viewer, Player target);
+    }
 
-    public PlayerListGUI(Player viewer) {
+    private final GPSend instance = GPSend.getInstance();
+    private final Selector selector;
+
+    public PlayerListGUI(Player viewer, Selector selector) {
         super(
                 viewer,
                 54,
@@ -29,6 +34,7 @@ public class PlayerListGUI extends PaginatedGUI<Player> {
                         null
                 )
         );
+        this.selector = selector;
     }
 
     @Override
@@ -63,7 +69,7 @@ public class PlayerListGUI extends PaginatedGUI<Player> {
 
     @Override
     protected void onClick(Player player, InventoryClickEvent event) {
-        new AmountGUI(viewer, player.getName()).open();
+        selector.onSelect(viewer, player);
     }
 
     @Override

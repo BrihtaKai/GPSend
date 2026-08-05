@@ -1,3 +1,4 @@
+cv: 3 # do not modify
 # ################################################################ #
 #   $$$$$$\                                                $$\     #
 #  $$  __$$\                                               $$ |    #
@@ -16,16 +17,44 @@
 # Plugin Version: ${project.version}            # Requirements: GriefPrevention #
 # ################################################################ #
 
-# FUNCTIONALITY SETTINGS
+
+# ==================================================================
+#  GENERAL SETTINGS
+# ==================================================================
+
+# Broadcast a server-wide message whenever /gpsend all is used.
+# The message used is send.broadcast_all (see MESSAGES below).
 broadcast_on_sendall: true
+
+# Log every /gpsend all execution to console/file for auditing.
 sendall_log: false
 
-# 0 = total
-# 1 = bonus
-# 2 = accrued
-# 3 = remaining
-# 4 = remaining-bonus-cap
+# Check Spigot for plugin updates on startup and every 24h,
+# warning online operators in chat if a newer version is found.
+check_for_updates: true
+
+
+# ==================================================================
+#  CLAIM BLOCK SETTINGS
+# ==================================================================
+
+# Which GriefPrevention claim block pool sendable amounts are
+# measured against, and deducted/credited from, on every transfer.
+#
+#   0 = total               (accrued + bonus combined)
+#   1 = bonus                (admin/reward-granted blocks only)
+#   2 = accrued               (naturally earned blocks only)
+#   3 = remaining              (total minus blocks already used in claims)
+#   4 = remaining-bonus-cap     (min(remaining, bonus) — safest default,
+#                                 prevents sending blocks that are
+#                                 currently "spent" on active claims)
+#
+# NOTE: mode 0 (total) is not recommended — see deductCB() in
+# SendingHandler for why it can produce confusing balance splits.
 claimblocks_type: 4
+
+# Display names for each claimblocks_type mode above, used to fill
+# the %type% placeholder in transfer messages and GUI lore.
 type_names:
   total: "total"
   bonus: "bonus"
@@ -33,17 +62,43 @@ type_names:
   remaining: "remaining"
   remaining_bonus_cap: "remaining-bonus"
 
-check_for_updates: true
-separate_commands: false
-request_expire_in: 2 #min
 
+# ==================================================================
+#  REQUEST SETTINGS  (/gprequest)
+# ==================================================================
+
+# How long a pending request stays valid before it's automatically
+# cancelled and both players are notified. In minutes.
+request_expire_in: 2
+
+
+# ==================================================================
+#  COMMAND ALIASES
+# ==================================================================
+
+# Extra command names that also trigger /gpsend and /gprequest.
+# Registered at startup and again on /gpsend reload.
 command_alias_gpsend:
   - "sendclaimblocks"
 
 command_alias_gprequest:
   - "rqclaimblocks"
 
+
+# ==================================================================
+#  GUI SETTINGS
+# ==================================================================
+#
+# All GUIs are fully re-skinnable: material, custom_model_data,
+# display_name and lore can be changed freely. `slot` values must
+# stay within the inventory size noted for each GUI below (slots
+# are 0-indexed, top-left is slot 0).
+
 gui:
+
+  # ---- ChoosingGUI (27 slots) --------------------------------------
+  # Opened by /gpsend with no arguments. Lets the player choose
+  # between sending to one specific player or to everyone online.
   choosing_gui:
     title: "    &0&lCHOOSE SENDING MODE"
     items:
@@ -68,9 +123,14 @@ gui:
           - " "
           - "&6Click to proceed."
 
+  # ---- PlayerListGUI (54 slots, paginated) -------------------------
+  # Lists online players as clickable heads. Used by both the
+  # /gpsend "specific player" flow and the /gprequest new flow.
   player_list_gui:
     title: "        &0&lSELECT RECEIVER"
     items:
+      # Per-player head icon. %player% is replaced with that
+      # player's name; slot/material are determined as PLAYER_HEAD wit that player's skin.
       player_head:
         display_name: "&fChoose &b&l%player% &fas receiver?"
       prev_page:
@@ -78,6 +138,7 @@ gui:
         material: ARROW
         model_data: 0
         display_name: "&bPREVIOUS PAGE"
+      # %page% / %max% are replaced with the current/last page number.
       page_info:
         slot: 49
         material: PAPER
@@ -89,8 +150,15 @@ gui:
         model_data: 0
         display_name: "&bNEXT PAGE"
 
+  # ---- AmountGUI (27 slots) -----------------------------------------
+  # Lets the player dial in an amount with +/- buttons before
+  # confirming a send or a request.
   amount_gui:
     title: "  &0&lCHOOSE AMOUNT TO SEND"
+
+    # Value each -/+ button adds or subtracts per click, matched
+    # left-to-right against the minus/plus slot lists below
+    # (e.g. minus1 <-> slots[0], minus2 <-> slots[1], ...).
     amounts:
       plus1: 1
       plus2: 10
@@ -100,38 +168,52 @@ gui:
       minus2: 10
       minus3: 100
       minus4: 1000
+
     items:
       minus:
         slots: [12, 11, 10, 9]
         material: REDSTONE
         model_data: 0
         display_name: "&c&l- %amount%"
+
+      # Center info item showing the current amount and whether
+      # the player can currently afford it.
       info:
         slot: 13
         material: PAPER
         model_data: 0
         display_name: "&f&lSending to &b%mode%&f:"
+        # Display name used for %mode% when the "send to everyone"
+        # flow is active instead of a specific player.
         all_mode_name: "ALL"
+        # Lore shown when sending to a single player.
         lore_target:
           - " "
           - "&fAmount: &b%amount% %affordable%"
+        # Lore shown when sending to everyone (all_mode_name).
         lore_all:
           - " "
           - "&fAmount: &b%amount% %affordable_single%"
           - "&fTotal: &b%total% %affordable%"
+        # Symbols substituted into %affordable% / %affordable_single%.
         affordable_no: "&c✖"
         affordable_yes: "&a✔"
+
       plus:
         slots: [14, 15, 16, 17]
         material: EMERALD
         model_data: 0
         display_name: "&a&l+ %amount%"
+
       confirm:
         slot: 22
         material: LIME_WOOL
         model_data: 0
         display_name: "&a&l✔ CONFIRM AND SEND ✔"
 
+  # ---- Shared "your stats" item --------------------------------------
+  # An optional info item showing the viewer's claim block balances.
+  # Can be toggled and repositioned independently per GUI below.
   info_item:
     material: OAK_SIGN
     model_data: 0
@@ -146,12 +228,17 @@ gui:
       - "&7Bonus: &b%bonus%"
       - "&7Total: &b%total%"
       - "&7Remaining: &b%remaining%"
+    # Display names for %mode% specific to this item — separate
+    # from type_names above since the phrasing here is descriptive
+    # rather than a short label.
     modes:
-      total: "Total only"
-      bonus: "Bonus only"
-      accrued: "Accrued only"
-      remaining: "Remaining only"
+      total: "total only"
+      bonus: "bonus only"
+      accrued: "accrued only"
+      remaining: "eemaining only"
       remaining_bonus: "remaining (capped to Bonus)"
+    # Per-GUI display toggle + slot override. Disable display to
+    # hide the stats item entirely in that GUI.
     choosing_gui:
       display: true
       slot: 13
@@ -162,41 +249,67 @@ gui:
       display: true
       slot: 4
 
-# ERROR MESSAGES
-invalid_amount: "&cInvalid amount. Please enter a valid number."
-no_enough_blocks: "&cYou don't have enough %type% claim blocks to send! You need %need% more."
-player_not_found: "&cTarget player not found or not online."
-invalid_type: "&cInvalid argument for command."
-no_permission: "&cYou don't have permission to use this command."
-cannot_send_to_self: "&cYou cannot send claimblocks to yourself."
-no_players: "&cNo online players found. (ignoring yourself)"
-invalid_usage: "&cUsage: /gprequest new <player> <amount> &7or &c/gprequest accept/deny"
-request_not_found: "&cYou don't have any pending requests!"
-request_already_involved: "&cYou or that player already has an active request!"
 
-# CHAT MESSAGES
-sender: "&aYou have just sent %amount% %type% claim blocks to %target%."
-receiver: "&a%player% just sent you %amount% %type% claim blocks."
-broadcast_message: "&6%player% sent %amount% %type% claim blocks to everyone online, which is %total% in total."
-
-request_sender_new: "&aSuccessfully requesting %amount% claimblocks from %target%."
-request_target_new: "&a&l%owner% is REQUESTING %amount% claimblocks from you. Use '/gprequest accept' to send. This expires in 5min."
-request_sender_expire: "&cYour claimblock request of %amount% to %target% has expired."
-request_target_expire: "&cRequest from %owner% for %amount% claimblocks has expired."
-request_sender_accept: "&a%target% accepted your request for %amount% claimblocks."
-request_target_accept: "&aYou accepted %owner%'s request for %amount% claimblocks."
-request_sender_deny: "&c%target% denied your request for %amount% claimblocks."
-request_target_deny: "&cYou denied %owner%'s request for %amount% claimblocks."
-
-# CLAIM BLOCK TYPES
+# ==================================================================
+#  MESSAGES
+# ==================================================================
 #
-# ACCRUED
-#   Claim blocks earned naturally through play.
-# BONUS
-#   Claim blocks granted by admins or rewards.
-# TOTAL
-#   Accrued + Bonus.
-# REMAINING
-#   Total - Used claim blocks.
-# REMAINING-BONUS-CAP
-#   min(Remaining, Bonus)
+# Supports &-codes and &#RRGGBB hex colors, plus PlaceholderAPI
+# placeholders if the plugin is installed. Placeholder tokens
+# specific to each message are noted inline below.
+
+# ---- Shared errors ------------------------------------------------
+# Not tied to any single feature — reused by /gpsend and /gprequest.
+errors:
+  no_permission: "&cYou don't have permission to use this command."
+  invalid_amount: "&cInvalid amount. Please enter a valid number."
+  player_not_found: "&cTarget player not found or not online."
+  no_players_online: "&cNo online players found. (ignoring yourself)"
+
+# ---- Transfer engine -----------------------------------------------
+# Fired by SendingHandler, which both /gpsend and an accepted
+# /gprequest route through — keep these generic (no "request"-
+# specific wording), since they fire in both flows.
+transfer:
+  cannot_send_to_self: "&cYou cannot send claimblocks to yourself."
+  # %type% = claim block type name, %need% = shortfall amount.
+  not_enough_blocks: "&cYou don't have enough %type% claim blocks to send! You need %need% more."
+  # %amount%, %type%, %target% = the receiving player's name.
+  sent_confirmation: "&aYou have just sent %amount% %type% claim blocks to %target%."
+  # %player% = the sending player's name, %amount%, %type%.
+  received_notice: "&a%player% just sent you %amount% %type% claim blocks."
+
+# ---- /gpsend specific -----------------------------------------------
+send:
+  invalid_target_type: "&cInvalid argument for command."
+  # %player%, %amount%, %type%, %total% = amount * online player count.
+  broadcast_all: "&6%player% sent %amount% %type% claim blocks to everyone online, which is %total% in total."
+
+# ---- /gprequest specific --------------------------------------------
+request:
+  invalid_usage: "&cUsage: /gprequest new <player> <amount> &7or &c/gprequest accept/deny"
+  already_active: "&cYou or that player already has an active request!"
+  no_pending: "&cYou don't have any pending requests!"
+
+  # Sent immediately when a request is created.
+  new:
+    # To the requester. %amount%, %target% = who the request went to.
+    sender_confirmation: "&aSuccessfully requesting %amount% claimblocks from %target%."
+    # To the requested player. %owner% = who's requesting, %amount%.
+    target_prompt: "&a&l%owner% is REQUESTING %amount% claimblocks from you. Use '/gprequest accept' to send. This expires in 5min."
+
+  # Sent by the expiry cycle once request_expire_in has elapsed.
+  expire:
+    sender_notice: "&cYour claimblock request of %amount% to %target% has expired."
+    target_notice: "&cRequest from %owner% for %amount% claimblocks has expired."
+
+  # Sent when the target runs /gprequest accept. Also triggers the
+  # transfer.* messages above, since the actual send happens here.
+  accept:
+    sender_notice: "&a%target% accepted your request for %amount% claimblocks."
+    target_confirmation: "&aYou accepted %owner%'s request for %amount% claimblocks."
+
+  # Sent when the target runs /gprequest deny.
+  deny:
+    sender_notice: "&c%target% denied your request for %amount% claimblocks."
+    target_confirmation: "&cYou denied %owner%'s request for %amount% claimblocks."

@@ -39,14 +39,14 @@ public class RequestManager {
         requests.add(request);
         MessageUtils.sendMessage(
                 owner,
-                "request_sender_new",
+                "request.new.sender_confirmation",
                 true,
                 getReplacers(request)
         );
 
         MessageUtils.sendMessage(
                 target,
-                "request_target_new",
+                "request.new.target_prompt",
                 true,
                 getReplacers(request)
         );
@@ -68,19 +68,22 @@ public class RequestManager {
         if (request == null) {
             return;
         }
+        if (!request.owner().isOnline() || !request.target().isOnline()) {
+            requests.remove(request);
+        }
 
         if (accepted) {
 
             MessageUtils.sendMessage(
                     request.owner(),
-                    "request_sender_accept",
+                    "request.accept.sender_notice",
                     true,
                     getReplacers(request)
             );
 
             MessageUtils.sendMessage(
                     request.target(),
-                    "request_target_accept",
+                    "request.accept.target_confirmation",
                     true,
                     getReplacers(request)
             );
@@ -97,14 +100,14 @@ public class RequestManager {
 
             MessageUtils.sendMessage(
                     request.owner(),
-                    "request_sender_deny",
+                    "request.deny.sender_notice",
                     true,
                     getReplacers(request)
             );
 
             MessageUtils.sendMessage(
                     request.target(),
-                    "request_target_deny",
+                    "request.deny.target_confirmation",
                     true,
                     getReplacers(request)
             );
@@ -155,14 +158,14 @@ public class RequestManager {
 
                         MessageUtils.sendMessage(
                                 request.owner(),
-                                "request_sender_expire",
+                                "request.expire.sender_notice",
                                 true,
                                 getReplacers(request)
                         );
 
                         MessageUtils.sendMessage(
                                 request.target(),
-                                "request_target_expire",
+                                "request.expire.target_notice",
                                 true,
                                 getReplacers(request)
                         );

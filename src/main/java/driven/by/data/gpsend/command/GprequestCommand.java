@@ -1,6 +1,8 @@
 package driven.by.data.gpsend.command;
 
 import driven.by.data.gpsend.GPSend;
+import driven.by.data.gpsend.gui.AmountGUI;
+import driven.by.data.gpsend.gui.PlayerListGUI;
 import driven.by.data.gpsend.request.Request;
 import driven.by.data.gpsend.utils.MessageUtils;
 import org.bukkit.Bukkit;
@@ -23,7 +25,7 @@ public class GprequestCommand implements CommandExecutor {
         if (args.length == 0) {
             MessageUtils.sendMessage(
                     player,
-                    "invalid_usage",
+                    "request.invalid_usage",
                     true,
                     null
             );
@@ -38,7 +40,7 @@ public class GprequestCommand implements CommandExecutor {
                 if (!player.hasPermission("gprequest.new")) {
                     MessageUtils.sendMessage(
                             player,
-                            "no_permission",
+                            "errors.no_permission",
                             true,
                             null
                     );
@@ -47,12 +49,17 @@ public class GprequestCommand implements CommandExecutor {
 
 
                 if (args.length < 3) {
-                    MessageUtils.sendMessage(
-                            player,
-                            "invalid_usage",
-                            true,
-                            null
-                    );
+                    if (args.length == 1) {
+                        new PlayerListGUI(player, (viewer, target) ->
+                                new AmountGUI(viewer, target.getName(),
+                                        (v, amt) -> v.performCommand("gprequest new " + target.getName() + " " + amt)
+                                ).open()
+                        ).open();
+                    } else if (args.length == 2) {
+                        new AmountGUI(player, args[1],
+                                (v, amt) -> v.performCommand("gprequest new " + args[1] + " " + amt)
+                        ).open();
+                    }
                     return true;
                 }
 
@@ -62,7 +69,7 @@ public class GprequestCommand implements CommandExecutor {
                 if (target == null) {
                     MessageUtils.sendMessage(
                             player,
-                            "player_not_found",
+                            "errors.player_not_found",
                             true,
                             null
                     );
@@ -78,7 +85,7 @@ public class GprequestCommand implements CommandExecutor {
 
                     MessageUtils.sendMessage(
                             player,
-                            "invalid_amount",
+                            "errors.invalid_amount",
                             true,
                             null
                     );
@@ -91,7 +98,7 @@ public class GprequestCommand implements CommandExecutor {
 
                     MessageUtils.sendMessage(
                             player,
-                            "invalid_amount",
+                            "errors.invalid_amount",
                             true,
                             null
                     );
@@ -106,7 +113,7 @@ public class GprequestCommand implements CommandExecutor {
                 if (!created) {
                     MessageUtils.sendMessage(
                             player,
-                            "request_already_involved",
+                            "request.already_active",
                             true,
                             null
                     );
@@ -126,7 +133,7 @@ public class GprequestCommand implements CommandExecutor {
 
                     MessageUtils.sendMessage(
                             player,
-                            "request_not_found",
+                            "request.no_pending",
                             true,
                             null
                     );
@@ -152,7 +159,7 @@ public class GprequestCommand implements CommandExecutor {
 
                     MessageUtils.sendMessage(
                             player,
-                            "request_not_found",
+                            "request.no_pending",
                             true,
                             null
                     );
