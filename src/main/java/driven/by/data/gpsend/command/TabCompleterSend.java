@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabCompleter implements org.bukkit.command.TabCompleter {
+public class TabCompleterSend implements org.bukkit.command.TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String alias, String[] args) {

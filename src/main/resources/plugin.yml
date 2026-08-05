@@ -9,6 +9,8 @@ softdepend: [PlaceholderAPI]
 commands:
   gpsend:
     description: Send claim blocks.
+  gprequest:
+    description: Request claim blocks.
 
 permissions:
   gpsend.send:

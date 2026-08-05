@@ -2,111 +2,231 @@ package driven.by.data.gpsend.gui;
 
 import driven.by.data.gpsend.GPSend;
 import driven.by.data.gpsend.utils.MessageUtils;
-import driven.by.data.gpsend.utils.PlayerStatusManager;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-public class PlayerListGUI {
+public class PlayerListGUI extends PaginatedGUI<Player> {
 
-    private final GPSend instance = GPSend.getInstance();
-    private final boolean placeholderAPIInstalled = instance.placeholderAPIInstalled;
-    private Map<UUID, Integer> playerPages = new HashMap<>();
-
-    public Map<UUID, Integer> getPlayerPages() { return playerPages; }
-
-
-    public void open(Player executor, int page) {
-        playerPages.put(executor.getUniqueId(), page);
-        String title;
-        if (placeholderAPIInstalled) {
-            title = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_title")));
-        } else {
-            title = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_title"));
-        }
-        Inventory inv = Bukkit.createInventory(null, 54, title);
-
-        ItemStack line = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        ItemMeta line_meta = line.getItemMeta();
-        line_meta.setDisplayName(ChatColor.DARK_GRAY + "");
-        line.setItemMeta(line_meta);
-        for (int i = 36; i != 45; i++) {
-            inv.setItem(i, line);
-        }
-
-        ItemStack pageint = new ItemStack(Material.PAPER);
-        ItemMeta page_meta = pageint.getItemMeta();
-        page_meta.setDisplayName(ChatColor.GOLD + "Page " + (page + 1));
-        pageint.setItemMeta(page_meta);
-        inv.setItem(49, pageint);
-
-        List<Player> onlinePlayers = new ArrayList<>(Bukkit.getOnlinePlayers());
-        onlinePlayers.remove(executor);
-        int startIndex = page * 36;
-        int endIndex = Math.min(startIndex + 36, onlinePlayers.size());
-
-        for (int i = startIndex, slot = 0; i < endIndex; i++, slot++) {
-            Player onlinePlayer = onlinePlayers.get(i);
-            ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-            SkullMeta meta = (SkullMeta) skull.getItemMeta();
-            if (meta != null) {
-                meta.setOwningPlayer(onlinePlayer);
-                meta.setDisplayName(ChatColor.YELLOW + onlinePlayer.getName());
-                skull.setItemMeta(meta);
-            }
-            inv.setItem(slot, skull);
-        }
-
-        // Add pagination controls
-        if (page > 0) {
-            ItemStack prevPage = new ItemStack(Material.ARROW);
-            ItemMeta prevMeta = prevPage.getItemMeta();
-            if (prevMeta != null) {
-                String prevMetaTitle;
-                if (placeholderAPIInstalled) {
-                    prevMetaTitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_prev_page")));
-                } else {
-                    prevMetaTitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_prev_page"));
-                }
-                prevMeta.setDisplayName(prevMetaTitle);
-                prevPage.setItemMeta(prevMeta);
-            }
-            inv.setItem(48, prevPage);
-        }
-        if (endIndex < onlinePlayers.size()) {
-            ItemStack nextPage = new ItemStack(Material.ARROW);
-            ItemMeta nextMeta = nextPage.getItemMeta();
-            if (nextMeta != null) {
-                String nextMetaTitle;
-                if (placeholderAPIInstalled) {
-                    nextMetaTitle = MessageUtils.stringColorise("&#", PlaceholderAPI.setPlaceholders(executor, instance.getConfig().getString("gui2_next_page")));
-                } else {
-                    nextMetaTitle = MessageUtils.stringColorise("&#", instance.getConfig().getString("gui2_next_page"));
-                }
-                nextMeta.setDisplayName(nextMetaTitle);
-                nextPage.setItemMeta(nextMeta);
-            }
-            inv.setItem(50, nextPage);
-        }
-
-        inv.setItem(53, InfoItem.build(executor));
-
-        executor.openInventory(inv);
-        PlayerStatusManager.setPlayerStatus(executor.getUniqueId(), "gui-status", "gui2");
-
+    public interface Selector {
+        void onSelect(Player viewer, Player target);
     }
 
-    public void close(Player executor) {
-        executor.closeInventory();
-        PlayerStatusManager.removePlayerStatus(executor.getUniqueId(), "gui-status");
-        playerPages.remove(executor.getUniqueId());
+    private final GPSend instance = GPSend.getInstance();
+    private final Selector selector;
+
+    public PlayerListGUI(Player viewer, Selector selector) {
+        super(
+                viewer,
+                54,
+                MessageUtils.getProcessedMessage(
+                        viewer,
+                        "gui.player_list_gui.title",
+                        true,
+                        null
+                )
+        );
+        this.selector = selector;
+    }
+
+    @Override
+    protected List<Player> getItems() {
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        players.remove(viewer);
+        return players;
+    }
+
+    @Override
+    protected ItemStack render(Player player) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        if (meta == null) {
+            return item;
+        }
+
+        meta.setOwningPlayer(player);
+        meta.setDisplayName(
+                MessageUtils.getProcessedMessage(
+                        viewer,
+                        "gui.player_list_gui.items.player_head.display_name",
+                        true,
+                        Map.of("%player%", player.getName())
+                )
+        );
+
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    @Override
+    protected void onClick(Player player, InventoryClickEvent event) {
+        selector.onSelect(viewer, player);
+    }
+
+    @Override
+    protected void beforeBuild() {
+        ItemStack glass = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+
+        ItemMeta meta = glass.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(" ");
+            glass.setItemMeta(meta);
+        }
+
+        for (int slot = 36; slot <= 44; slot++) {
+            setItem(slot, glass);
+        }
+    }
+
+    @Override
+    protected void afterBuild() {
+        ItemStack page = new ItemStack(
+                Material.valueOf(
+                        instance.getConfig().getString(
+                                "gui.player_list_gui.items.page_info.material",
+                                "PAPER"
+                        )
+                )
+        );
+
+        ItemMeta meta = page.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(
+                    MessageUtils.getProcessedMessage(
+                            viewer,
+                            "gui.player_list_gui.items.page_info.display_name",
+                            true,
+                            Map.of(
+                                    "%page%", String.valueOf(getPage() + 1),
+                                    "%max%", String.valueOf(getMaxPages(true))
+                            )
+                    )
+            );
+
+            int modelData = instance.getConfig().getInt(
+                    "gui.player_list_gui.items.page_info.model_data"
+            );
+            if (modelData != 0) {
+                meta.setCustomModelData(modelData);
+            }
+
+            page.setItemMeta(meta);
+        }
+
+        setItem(
+                instance.getConfig().getInt("gui.player_list_gui.items.page_info.slot"),
+                page
+        );
+
+        if (instance.getConfig().getBoolean("gui.info_item.player_list_gui.display")) {
+            setItem(
+                    instance.getConfig().getInt("gui.info_item.player_list_gui.slot"),
+                    InfoItem.build(viewer)
+            );
+        }
+    }
+
+    @Override
+    protected List<Integer> contentSlots() {
+        List<Integer> slots = new ArrayList<>();
+
+        for (int i = 0; i < 36; i++) {
+            slots.add(i);
+        }
+
+        return slots;
+    }
+
+    @Override
+    protected int getPrevSlot() {
+        return instance.getConfig().getInt(
+                "gui.player_list_gui.items.prev_page.slot"
+        );
+    }
+
+    @Override
+    protected int getNextSlot() {
+        return instance.getConfig().getInt(
+                "gui.player_list_gui.items.next_page.slot"
+        );
+    }
+
+    @Override
+    protected ItemStack createPrevItem() {
+        ItemStack item = new ItemStack(
+                Material.valueOf(
+                        instance.getConfig().getString(
+                                "gui.player_list_gui.items.prev_page.material",
+                                "ARROW"
+                        )
+                )
+        );
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(
+                    MessageUtils.getProcessedMessage(
+                            viewer,
+                            "gui.player_list_gui.items.prev_page.display_name",
+                            true,
+                            null
+                    )
+            );
+
+            int modelData = instance.getConfig().getInt(
+                    "gui.player_list_gui.items.prev_page.model_data"
+            );
+            if (modelData != 0) {
+                meta.setCustomModelData(modelData);
+            }
+
+            item.setItemMeta(meta);
+        }
+
+        return item;
+    }
+
+    @Override
+    protected ItemStack createNextItem() {
+        ItemStack item = new ItemStack(
+                Material.valueOf(
+                        instance.getConfig().getString(
+                                "gui.player_list_gui.items.next_page.material",
+                                "ARROW"
+                        )
+                )
+        );
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(
+                    MessageUtils.getProcessedMessage(
+                            viewer,
+                            "gui.player_list_gui.items.next_page.display_name",
+                            true,
+                            null
+                    )
+            );
+
+            int modelData = instance.getConfig().getInt(
+                    "gui.player_list_gui.items.next_page.model_data"
+            );
+            if (modelData != 0) {
+                meta.setCustomModelData(modelData);
+            }
+
+            item.setItemMeta(meta);
+        }
+
+        return item;
     }
 }

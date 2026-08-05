@@ -10,7 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InfoItem {
 
@@ -24,51 +26,94 @@ public class InfoItem {
         int remaining = data.getRemainingClaimBlocks();
 
         int mode = instance.getConfig().getInt("claimblocks_type");
+
         int maxSendable;
         String modeLabel;
 
         switch (mode) {
             case 0:
-                modeLabel = "Total only";
+                modeLabel = instance.getConfig().getString("gui.info_item.modes.total");
                 maxSendable = total;
                 break;
+
             case 1:
-                modeLabel = "Bonus only";
+                modeLabel = instance.getConfig().getString("gui.info_item.modes.bonus");
                 maxSendable = bonus;
                 break;
+
             case 2:
-                modeLabel = "Accrued only";
+                modeLabel = instance.getConfig().getString("gui.info_item.modes.accrued");
                 maxSendable = accrued;
                 break;
+
             case 3:
-                modeLabel = "Remaining only";
+                modeLabel = instance.getConfig().getString("gui.info_item.modes.remaining");
                 maxSendable = remaining;
                 break;
+
             case 4:
-                modeLabel = "Remaining (capped to Bonus)";
+                modeLabel = instance.getConfig().getString("gui.info_item.modes.remaining_bonus");
                 maxSendable = Math.min(remaining, bonus);
                 break;
+
             default:
-                modeLabel = "unknown";
+                modeLabel = "Unknown";
                 maxSendable = 0;
                 break;
         }
 
-        ItemStack sign = new ItemStack(Material.OAK_SIGN);
-        ItemMeta meta = sign.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(MessageUtils.stringColorise("&#", "&eSendable Blocks"));
-            List<String> lore = new ArrayList<>();
-            lore.add(MessageUtils.stringColorise("&#", "&6Max sendable: &f" + maxSendable));
-            lore.add(MessageUtils.stringColorise("&#", "&7Accrued: &f" + accrued));
-            lore.add(MessageUtils.stringColorise("&#", "&7Bonus: &f" + bonus));
-            lore.add(MessageUtils.stringColorise("&#", "&7Total: &f" + total));
-            lore.add(MessageUtils.stringColorise("&#", "&7Remaining: &f" + remaining));
-            lore.add(MessageUtils.stringColorise("&#", "&8Mode: " + modeLabel));
-            meta.setLore(lore);
-            sign.setItemMeta(meta);
+        Material material = Material.valueOf(
+                instance.getConfig().getString(
+                        "gui.info_item.material",
+                        "OAK_SIGN"
+                )
+        );
+
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta == null) {
+            return item;
         }
 
-        return sign;
+        meta.setDisplayName(
+                MessageUtils.getProcessedMessage(
+                        player,
+                        "gui.info_item.display_name",
+                        true,
+                        null
+                )
+        );
+
+        int modelData = instance.getConfig().getInt("gui.info_item.model_data");
+        if (modelData != 0) {
+            meta.setCustomModelData(modelData);
+        }
+
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%max_sendable%", String.valueOf(maxSendable));
+        placeholders.put("%accrued%", String.valueOf(accrued));
+        placeholders.put("%bonus%", String.valueOf(bonus));
+        placeholders.put("%total%", String.valueOf(total));
+        placeholders.put("%remaining%", String.valueOf(remaining));
+        placeholders.put("%mode%", modeLabel);
+
+        List<String> lore = new ArrayList<>();
+
+        for (String line : instance.getConfig().getStringList("gui.info_item.lore")) {
+            lore.add(
+                    MessageUtils.getProcessedMessage(
+                            player,
+                            line,
+                            false,
+                            placeholders
+                    )
+            );
+        }
+
+        meta.setLore(MessageUtils.listColorise("&#", lore));
+        item.setItemMeta(meta);
+
+        return item;
     }
 }
