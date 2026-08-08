@@ -111,15 +111,26 @@ public class UpdateUtils {
         String[] current = currentVersion.split("\\.");
         String[] latest = latestVersion.split("\\.");
 
-        for (int i = 0; i < 3; i++) {
-            int currentPart = Integer.parseInt(current[i]);
-            int latestPart = Integer.parseInt(latest[i]);
+        // Parse all components first, before any comparison
+        int[] currentParts = new int[3];
+        int[] latestParts = new int[3];
 
-            if (latestPart > currentPart) {
+        try {
+            for (int i = 0; i < 3; i++) {
+                currentParts[i] = Integer.parseInt(current[i]);
+                latestParts[i] = Integer.parseInt(latest[i]);
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        // Only compare after all components are successfully parsed
+        for (int i = 0; i < 3; i++) {
+            if (latestParts[i] > currentParts[i]) {
                 return true;
             }
 
-            if (latestPart < currentPart) {
+            if (latestParts[i] < currentParts[i]) {
                 return false;
             }
         }
