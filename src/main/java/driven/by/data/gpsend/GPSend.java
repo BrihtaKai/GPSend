@@ -89,6 +89,7 @@ public final class GPSend extends JavaPlugin {
         Objects.requireNonNull(getCommand("gprequest")).setExecutor(new GprequestCommand());
         Objects.requireNonNull(getCommand("gprequest")).setTabCompleter(new TabCompleterRequest());
         aliasManager.gpsendAliasRegister();
+        aliasManager.gprequestAliasRegister();
 
         Bukkit.getLogger().info("\n" +
                 "╭━━━┳━━━┳━━━╮╱╱╱╱╱╱╱╭╮\n" +

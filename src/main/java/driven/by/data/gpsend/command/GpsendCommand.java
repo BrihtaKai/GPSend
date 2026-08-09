@@ -29,6 +29,7 @@ public class GpsendCommand implements CommandExecutor {
             }
             instance.reloadConfig();
             instance.getAliasManager().gpsendAliasRegister();
+            instance.getAliasManager().gprequestAliasRegister();
             sender.sendMessage("Config reloaded!");
             if (instance.getConfig().getInt("claimblocks_type") == 0) {
                 Bukkit.getLogger().warning(
