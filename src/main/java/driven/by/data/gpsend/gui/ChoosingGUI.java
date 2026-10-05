@@ -53,7 +53,7 @@ public class ChoosingGUI extends BaseGUI {
         } else {
             // Keep the original behavior of centering the player button
             setItem(
-                    13,
+                    playerSlot,
                     createItem("gui.choosing_gui.items.player"),
                     event -> new PlayerListGUI(viewer, this::openSendAmountGUI).open()
             );
